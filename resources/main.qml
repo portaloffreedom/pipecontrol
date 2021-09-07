@@ -5,12 +5,13 @@ import PipewireMetadata 1.0
 
 
 ApplicationWindow {
-//    width: 640
-    height: 100
+    height: 200
+    width: 350
+    minimumHeight: 200
+    minimumWidth: 350
     visible: true
     title: "PipeControl"
 //    icon: "qrc:/resources/pipecontrol.png"
-//    PipewireMetadata.force_sampleRateChanged: forceRateCombo.currentIndex = forceRateCombo.indexOfValue(PipewireMetadata.force_sampleRate)
 
     GridLayout {
         columns: 2
