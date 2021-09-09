@@ -1,40 +1,41 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-import PipewireMetadata 1.0
+import Pipewire 1.0
 
 
 ApplicationWindow {
-    height: 200
-    width: 350
-    minimumHeight: 200
-    minimumWidth: 350
+    id: window
+    height: 100
+    width: 100
+    minimumHeight: layout.implicitHeight + layout.anchors.margins*2
+    minimumWidth: layout.implicitWidth + layout.anchors.margins*2
     visible: true
-    title: "PipeControl"
+    title: "PipeControl "
 //    icon: "qrc:/resources/pipecontrol.png"
 
     GridLayout {
+        id: layout
         columns: 2
         anchors.fill: parent
         anchors.margins: 20
 
-
         Text {
-            text: "Force sample rate"
+            text: qsTr("Force sample rate")
         }
 
         ComboBox {
             id: forceRateCombo
             textRole: "text"
             valueRole: "value"
-            onActivated: PipewireMetadata.force_sampleRate = currentValue
+            onActivated: Pipewire.settings.force_sampleRate = currentValue
             Component.onCompleted: {
                 update();
-                PipewireMetadata.force_sampleRateChanged.connect(update);
+                Pipewire.settings.force_sampleRateChanged.connect(update);
             }
 
             function update() {
-                currentIndex = indexOfValue(PipewireMetadata.force_sampleRate)
+                currentIndex = indexOfValue(Pipewire.settings.force_sampleRate)
             }
 
             model: [
@@ -49,21 +50,21 @@ ApplicationWindow {
         }
 
         Text {
-            text: "Minimum buffer"
+            text: qsTr("Minimum buffer")
         }
 
         ComboBox {
             id: minRateCombo
             textRole: "text"
             valueRole: "value"
-            onActivated: PipewireMetadata.minBuffer = currentValue
+            onActivated: Pipewire.settings.minBuffer = currentValue
             Component.onCompleted: {
                 update();
-                PipewireMetadata.minBufferChanged.connect(update);
+                Pipewire.settings.minBufferChanged.connect(update);
             }
 
             function update() {
-                currentIndex = indexOfValue(PipewireMetadata.minBuffer)
+                currentIndex = indexOfValue(Pipewire.settings.minBuffer)
             }
 
             model: [
@@ -80,21 +81,21 @@ ApplicationWindow {
         }
 
         Text {
-            text: "Max buffer"
+            text: qsTr("Max buffer")
         }
 
         ComboBox {
-            id: maxRateCombo
+            id: maxBufferCombo
             textRole: "text"
             valueRole: "value"
-            onActivated: PipewireMetadata.maxBuffer = currentValue
+            onActivated: Pipewire.settings.maxBuffer = currentValue
             Component.onCompleted: {
                 update();
-                PipewireMetadata.maxBufferChanged.connect(update);
+                Pipewire.settings.maxBufferChanged.connect(update);
             }
 
             function update() {
-                currentIndex = indexOfValue(PipewireMetadata.maxBuffer)
+                currentIndex = indexOfValue(Pipewire.settings.maxBuffer)
             }
 
             model: [
@@ -111,21 +112,21 @@ ApplicationWindow {
         }
 
         Text {
-            text: "Force buffer size"
+            text: qsTr("Force buffer size")
         }
 
         ComboBox {
             id: forceBufferCombo
             textRole: "text"
             valueRole: "value"
-            onActivated: PipewireMetadata.force_buffer = currentValue
+            onActivated: Pipewire.settings.force_buffer = currentValue
             Component.onCompleted: {
                 update();
-                PipewireMetadata.force_bufferChanged.connect(update);
+                Pipewire.settings.force_bufferChanged.connect(update);
             }
 
             function update() {
-                currentIndex = indexOfValue(PipewireMetadata.force_buffer)
+                currentIndex = indexOfValue(Pipewire.settings.force_buffer)
             }
 
             model: [
@@ -139,6 +140,34 @@ ApplicationWindow {
                 { value: 2048, text: "2048" },
                 { value: 4096, text: "4096" },
                 { value: 8192, text: "8192" },
+            ]
+        }
+
+        Text {
+            text: qsTr("Log Level")
+        }
+
+        ComboBox {
+            id: logLevelCombo
+            textRole: "text"
+            valueRole: "value"
+            onActivated: Pipewire.settings.logLevel = currentValue
+            Component.onCompleted: {
+                update();
+                Pipewire.settings.logLevelChanged.connect(update);
+            }
+
+            function update() {
+                currentIndex = indexOfValue(Pipewire.settings.logLevel)
+            }
+
+            model: [
+                { value: 0, text: qsTr("No log") },
+                { value: 1, text: qsTr("Error")  },
+                { value: 2, text: qsTr("Warning")},
+                { value: 3, text: qsTr("Info")   },
+                { value: 4, text: qsTr("Debug")  },
+                { value: 5, text: qsTr("Trace")  },
             ]
         }
     }

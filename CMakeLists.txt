@@ -22,8 +22,14 @@ set(TS_FILES resources/translations/pipecontrol_it_IT.ts)
 
 set(PROJECT_SOURCES
         src/main.cpp
-        src/pipewiremetadata.h
-        src/pipewiremetadata.cpp
+        src/qpipewire.h
+        src/qpipewire.cpp
+        src/qpipewiremetadata.h
+        src/qpipewiremetadata.cpp
+        src/qpipewiresettings.h
+        src/qpipewiresettings.cpp
+        src/qpipewireclient.h
+        src/qpipewireclient.cpp
         qml.qrc
         ${TS_FILES}
 )

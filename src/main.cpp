@@ -9,7 +9,8 @@
 
 #include <iostream>
 
-#include "src/pipewiremetadata.h"
+#include "src/qpipewire.h"
+#include "src/qpipewiresettings.h"
 
 int main(int argc, char *argv[])
 {
@@ -31,18 +32,20 @@ int main(int argc, char *argv[])
     }
 
   // Allocate before the engine to ensure that it outlives it
-  PipewireMetadata pw_metadata(&argc, &argv);
-  pw_metadata.round_trip();
-  std::cout << "min buffer = " << pw_metadata.minBuffer() << std::endl;
-  std::cout << "max buffer = " << pw_metadata.maxBuffer() << std::endl;
-  std::cout << "force sample = " << pw_metadata.force_sampleRate() << std::endl;
-  std::cout << "force buffer = " << pw_metadata.force_buffer() << std::endl;
+  QPipewire qpipewire(&argc, &argv);
+  qpipewire.round_trip();
+  std::cout << "settings = " << qpipewire.settings() << std::endl;
+  std::cout << "log level = " << qpipewire.settings()->logLevel() << std::endl;
+  std::cout << "min buffer = " << qpipewire.settings()->minBuffer() << std::endl;
+  std::cout << "max buffer = " << qpipewire.settings()->maxBuffer() << std::endl;
+  std::cout << "force sample = " << qpipewire.settings()->force_sampleRate() << std::endl;
+  std::cout << "force buffer = " << qpipewire.settings()->force_buffer() << std::endl;
 
   QTimer timer;
-  timer.connect(&timer, &QTimer::timeout, &pw_metadata, &PipewireMetadata::round_trip);
+  timer.connect(&timer, &QTimer::timeout, &qpipewire, &QPipewire::round_trip);
   timer.start(100);
 
-  qmlRegisterSingletonInstance("PipewireMetadata", 1, 0, "PipewireMetadata", &pw_metadata);
+  qmlRegisterSingletonInstance("Pipewire", 1, 0, "Pipewire", &qpipewire);
 
 
   QQmlApplicationEngine engine;
