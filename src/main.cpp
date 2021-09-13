@@ -11,6 +11,7 @@
 
 #include "src/qpipewire.h"
 #include "src/qpipewiresettings.h"
+#include "src/qpipewireclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +20,10 @@ int main(int argc, char *argv[])
 #endif
 
   QGuiApplication app(argc, argv);
-  app.setWindowIcon(QIcon("resources/pipecontrol.png"));
+  app.setApplicationName("PipeControl");
+  app.setApplicationVersion("1.0");
+  app.setQuitOnLastWindowClosed(true);
+  app.setWindowIcon(QIcon(QStringLiteral("qrc:/resources/pipecontrol.png")));
 
   QTranslator translator;
   const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -45,20 +49,23 @@ int main(int argc, char *argv[])
   timer.connect(&timer, &QTimer::timeout, &qpipewire, &QPipewire::round_trip);
   timer.start(100);
 
-  qmlRegisterSingletonInstance("Pipewire", 1, 0, "Pipewire", &qpipewire);
+  qpipewire.connect(&qpipewire, &QPipewire::quit, &app, &QGuiApplication::quit);
 
+  qmlRegisterSingletonInstance("Pipewire", 1, 0, "Pipewire", &qpipewire);
+  qmlRegisterAnonymousType<QPipewireClient>("Pipewire.Client", 1);
+  qmlRegisterAnonymousType<QPipewireNode>("Pipewire.Node", 1);
 
   QQmlApplicationEngine engine;
-  const QUrl url(QStringLiteral("qrc:/resources/main.qml"));
+  const QUrl urlMain(QStringLiteral("qrc:/resources/main.qml"));
   QObject::connect(&engine,
                    &QQmlApplicationEngine::objectCreated,
                    &app,
-                   [url](QObject *obj, const QUrl &objUrl) {
-                      if (!obj && url == objUrl)
+                   [urlMain](QObject *obj, const QUrl &objUrl) {
+                      if (!obj && urlMain == objUrl)
                         QCoreApplication::exit(-1);
                    },
                    Qt::QueuedConnection);
-  engine.load(url);
+  engine.load(urlMain);
 
   if (engine.rootObjects().isEmpty()) {
       qCritical("Engine did not load any root object");

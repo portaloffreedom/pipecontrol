@@ -5,6 +5,11 @@
 #include <spa/utils/result.h>
 #include <spa/utils/string.h>
 #include <spa/utils/defs.h>
+#include <spa/pod/parser.h>
+#include <spa/debug/pod.h>
+
+#include <pipewire/impl.h>
+#include <pipewire/extensions/profiler.h>
 
 #include <QDebug>
 
@@ -36,12 +41,13 @@ void QPipewire::resync()
 static void do_quit(void *userdata, int signal_number)
 {
     QPIPEWIRE_CAST(userdata);
-    _this->_loop_quit();
+    _this->_quit();
 }
 
-void QPipewire::_loop_quit()
+void QPipewire::_quit()
 {
     pw_main_loop_quit(loop);
+    emit quit();
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +87,7 @@ static const pw_core_events core_events = {
 };
 
 //-----------------------------------------------------------------------------
-static void registry_event_global(void *data,
+static void registry_event(void *data,
                                   uint32_t id,
                                   uint32_t permissions,
                                   const char *type,
@@ -90,6 +96,12 @@ static void registry_event_global(void *data,
 {
     QPIPEWIRE_CAST(data);
     _this->_registry_event(id, permissions, type, version, props);
+}
+
+static void registry_event_remove(void *data, uint32_t id)
+{
+    QPIPEWIRE_CAST(data);
+    _this->_registry_event_remove(id);
 }
 
 void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *type, uint32_t version, const struct spa_dict *props)
@@ -101,9 +113,9 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
     if(pw_client == nullptr && strcmp(type, PW_TYPE_INTERFACE_Client) == 0)
     {
         pw_client = new QPipewireClient(this, id, type);
+        emit clientChanged();
     }
-
-    if (strcmp(type, PW_TYPE_INTERFACE_Metadata) == 0)
+    else if (strcmp(type, PW_TYPE_INTERFACE_Metadata) == 0)
     {
         const char *metadata_name;
         metadata_name = spa_dict_lookup(props, PW_KEY_METADATA_NAME);
@@ -113,22 +125,59 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
                     spa_streq(metadata_name, "settings"))
             {
                 pw_settings = new QPipewireSettings(this, id, type);
+                emit settingsChanged();
             } else {
                 qWarning() << "Ignoring metadata \"" << metadata_name << '"';
             }
         }
     }
+    else if (spa_streq(type, PW_TYPE_INTERFACE_Profiler))
+    {
+        if (pw_profiler != nullptr) {
+            qWarning() << "Ignoring profiler " << id << ": already attached";
+            return;
+        }
+        pw_profiler = new QPipewireProfiler(this, id, type);
+        emit profilerChanged();
+    }
+    else if (spa_streq(type, PW_TYPE_INTERFACE_Node))
+    {
+        QPipewireNode *node = new QPipewireNode(this, id, props);
+        m_nodes->append(node);
+        qWarning() << "Adding node id(" << id << "): " << node->name();
+        emit nodesChanged();
+    }
+}
+
+void QPipewire::_registry_event_remove(uint32_t id)
+{
+    qWarning() << "Attempting to remove id(" << id << ")";
+    QPipewireNode *node = nullptr;
+    for(int i=0; i<m_nodes->size(); i++) {
+        if ((*m_nodes)[i]->id() == id) {
+            node = (*m_nodes)[i];
+            break;
+        }
+    }
+    if (node != nullptr) {
+        // ALL interfaces that are not NODES are ignored here.
+        qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
+        m_nodes->removeOne(node);
+        delete node;
+        emit nodesChanged();
+    }
 }
 
 static const pw_registry_events registry_events = {
     .version = PW_VERSION_REGISTRY_EVENTS,
-    .global = registry_event_global,
+    .global = registry_event,
+    .global_remove = registry_event_remove,
 };
-
 
 //-----------------------------------------------------------------------------
 QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
     : QObject(parent)
+    , m_nodes(new QPipewireNodeListModel())
 {
     spa_zero(core_listener);
     spa_zero(registry_listener);
@@ -150,6 +199,9 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
     if (context == nullptr) {
         throw std::runtime_error("Error creating Pipewire context");
     }
+
+    // Need this line or the profiler will not load.
+    pw_context_load_module(context, PW_EXTENSION_MODULE_PROFILER, nullptr, nullptr);
 
     //TODO remote should be?
     const char *remote = "";
@@ -182,6 +234,14 @@ QPipewire::~QPipewire()
     if (pw_client != nullptr) {
         delete pw_client;
     }
+    if (pw_profiler != nullptr) {
+        delete pw_profiler;
+    }
+    QPipewireNode *node;
+    foreach(node, m_nodes->list()) {
+        delete node;
+    }
+    delete m_nodes;
     pw_proxy_destroy((struct pw_proxy*) registry);
     pw_core_disconnect(core);
     pw_context_destroy(context);

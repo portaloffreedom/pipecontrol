@@ -3,5 +3,7 @@
         <file>resources/pipecontrol.png</file>
         <file>resources/main.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>resources/Top.qml</file>
+        <file>resources/Settings.qml</file>
     </qresource>
 </RCC>

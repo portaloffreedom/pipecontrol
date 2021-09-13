@@ -11,12 +11,24 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(KF_MIN_VERSION "5.68.0")
+
+find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
+
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings NO_POLICY_SCOPE)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
+find_package(KF5 ${KF_MIN_VERSION} COMPONENTS Kirigami2 CoreAddons REQUIRED)
 
 find_package(PkgConfig)
 pkg_check_modules(libpipewire REQUIRED libpipewire-0.3)
+
+add_definitions( -fexceptions )
 
 set(TS_FILES resources/translations/pipecontrol_it_IT.ts)
 
@@ -30,6 +42,12 @@ set(PROJECT_SOURCES
         src/qpipewiresettings.cpp
         src/qpipewireclient.h
         src/qpipewireclient.cpp
+        src/qpipewirenode.h
+        src/qpipewirenode.cpp
+        src/qpipewireprofiler.h
+        src/qpipewireprofiler.cpp
+        src/qpipewirenodelistmodel.h
+        src/qpipewirenodelistmodel.cpp
         qml.qrc
         ${TS_FILES}
 )
@@ -55,7 +73,9 @@ target_include_directories(pipecontrol
   PRIVATE ${libpipewire_INCLUDE_DIRS})
 target_link_libraries(pipecontrol
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::QuickControls2
-  PRIVATE ${libpipewire_LIBRARIES})
+  PRIVATE ${libpipewire_LIBRARIES}
+  PRIVATE KF5::Kirigami2
+)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_import_qml_plugins(pipecontrol)

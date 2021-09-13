@@ -30,6 +30,8 @@ void QPipewireClient::_client_info(const struct pw_client_info *info)
         std::cout << "\t\t" << i.key().toStdString() << ":\t\"" << i.value().toStdString() << '"' << std::endl;
         ++i;
     }
+
+    emit propertiesChanged();
 }
 
 static const pw_client_events client_events {
@@ -45,6 +47,11 @@ QPipewireClient::QPipewireClient(QPipewire *parent, uint32_t id, const char *typ
 {
     client = static_cast<pw_client*>(
                  pw_registry_bind(pipewire->registry, id, type, PW_VERSION_CLIENT, 0));
+
+    if (client == nullptr) {
+        throw std::runtime_error("Error creating client proxy");
+    }
+
     pw_client_add_listener(client,
                            &client_listener,
                            &client_events,

@@ -2,13 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="it_IT">
 <context>
-    <name>main</name>
+    <name>Settings</name>
     <message>
-        <source>Do not force</source>
+        <source>Force sample rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force sample rate</source>
+        <source>Do not force</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -17,6 +17,10 @@
     </message>
     <message>
         <source>Max buffer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force buffer size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -47,8 +51,19 @@
         <source>Trace</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>main</name>
     <message>
-        <source>Force buffer size</source>
+        <source>Top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
