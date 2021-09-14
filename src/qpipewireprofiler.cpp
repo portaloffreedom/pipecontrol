@@ -136,6 +136,7 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
     emit node->busyChanged();
     // info changed
     emit node->quantumChanged();
+    emit node->rateChanged();
 
     return 0;
 }
@@ -185,6 +186,8 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
     emit node->activeChanged();
     emit node->waitingChanged();
     emit node->busyChanged();
+    emit node->quantumChanged();
+    emit node->rateChanged();
 
     return 0;
 }
