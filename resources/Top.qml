@@ -16,8 +16,7 @@ ColumnLayout {
 
         //Text { text: index }
         Text {
-            Layout.leftMargin: 10
-            width: PlasmaCore.Units.iconSizes.smallMedium
+            Layout.preferredWidth: PlasmaCore.Units.iconSizes.smallMedium +30
             text: "ACTIVE"
         }
         Text {
@@ -27,18 +26,38 @@ ColumnLayout {
         }
         Rectangle {
             Layout.preferredWidth: 50
-            Text { anchors.centerIn: parent; text: "RATE" }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                text: "RATE"
+            }
         }
         Rectangle {
             Layout.preferredWidth: 70
-            Layout.alignment: Qt.AlignRight
-            Text { anchors.centerIn: parent; text: "WAIT" }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                text: "QUANT"
+            }
         }
         Rectangle {
             Layout.preferredWidth: 70
-            Text { anchors.centerIn: parent; text: "BUSY" }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                text: "WAIT"
+            }
+        }
+        Rectangle {
+            Layout.preferredWidth: 70
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                text: "BUSY"
+            }
         }
         Text {
+            Layout.leftMargin: 15
             Layout.fillWidth: true
             text: "NAME"
         }
@@ -75,7 +94,8 @@ ColumnLayout {
 
                 //Text { text: index }
                 Kirigami.Icon {
-                    Layout.leftMargin: 20
+                    Layout.leftMargin: 10
+                    Layout.rightMargin: 10
                     width: PlasmaCore.Units.iconSizes.smallMedium
                     height: PlasmaCore.Units.iconSizes.smallMedium
                     source: node.active ? "media-playback-start" : "media-playback-pause"
@@ -87,19 +107,41 @@ ColumnLayout {
                 }
                 Rectangle {
                     Layout.preferredWidth: 50
-                    Text { anchors.centerIn: parent; text: node.rate === 0 ? "" : node.rate }
+                    Layout.alignment: Qt.AlignRight;
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        text: node.rate === 0 ? "" : node.rate
+                    }
                 }
                 Rectangle {
                     Layout.preferredWidth: 70
                     Layout.alignment: Qt.AlignRight;
-                    Text { anchors.centerIn: parent; text: node.formatTime(node.waiting) }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        text: node.quantum === 0 ? "" : node.quantum
+                    }
                 }
                 Rectangle {
                     Layout.preferredWidth: 70
-                    Text { anchors.centerIn: parent; text: node.formatTime(node.busy) }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        text: node.formatTime(node.waiting)
+                    }
+                }
+                Rectangle {
+                    Layout.preferredWidth: 70
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        text: node.formatTime(node.busy)
+                    }
                 }
                 Text {
                     Layout.fillWidth: true
+                    Layout.leftMargin: 15
                     text: (node.driver ? " + " : "") + node.name
                 }
             }
