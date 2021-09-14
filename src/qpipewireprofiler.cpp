@@ -91,7 +91,7 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
     char *name = NULL;
     uint32_t id = 0;
     struct QPipewireNode::measurement measure;
-    struct QPipewireNode *node = nullptr;
+    QPipewireNode *node = nullptr;
 
     spa_zero(measure);
     int res = spa_pod_parse_struct(pod,
@@ -146,7 +146,7 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
     uint32_t id = 0;
     const char *name =  NULL;
     struct QPipewireNode::measurement measure;
-    struct QPipewireNode *node = nullptr;
+    QPipewireNode *node = nullptr;
 
     spa_zero(measure);
     int res = spa_pod_parse_struct(pod,
