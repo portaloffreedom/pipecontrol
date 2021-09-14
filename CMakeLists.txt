@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 
 project(pipecontrol VERSION 0.1 LANGUAGES CXX)
 
@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(KF_MIN_VERSION "5.68.0")
+set(QT_MIN_VERSION "5.15.0")
+set(QT_VERSION_MAJOR "5")
 
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 
@@ -21,8 +23,9 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
+#find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
+#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
+find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
 find_package(KF5 ${KF_MIN_VERSION} COMPONENTS Kirigami2 CoreAddons REQUIRED)
 
 find_package(PkgConfig)
@@ -52,7 +55,7 @@ set(PROJECT_SOURCES
         ${TS_FILES}
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+if("${QT_VERSION_MAJOR}" GREATER_EQUAL 6)
     qt_add_executable(pipecontrol
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
@@ -81,3 +84,5 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_import_qml_plugins(pipecontrol)
     qt_finalize_executable(pipecontrol)
 endif()
+
+install(TARGETS pipecontrol RUNTIME DESTINATION "bin" )
