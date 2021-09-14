@@ -11,11 +11,8 @@ Kirigami.ApplicationWindow {
 //    width: 800
     minimumWidth: page.implicitWidth + page.margins*2
     minimumHeight: page.implicitHeight + page.margins*2 + tabs.height*2
-    //maximumWidth: minimumWidth
-    //maximumHeight: minimumHeight
     visible: true
     title: "PipeControl "
-//    icon: "qrc:/resources/pipecontrol.png"
 
     ColumnLayout {
         anchors.fill: parent
@@ -60,7 +57,15 @@ Kirigami.ApplicationWindow {
             }
 
             Text {
-                text: "Work in progress by @portaloffreedom. License: GPLv3"
+                text: "Pipecontrol v" + Pipewire.appVersion +
+                      "\nWork in progress by @portaloffreedom." +
+                      "\nLicense: GPLv3" +
+                      "\n" +
+                      "\n Pipewire compiled version: " + Pipewire.pipewireCompiledVersion() +
+                      "\n Pipewire linked version: " + Pipewire.pipewireLinkedVersion() +
+                      "\n Qt compiled version: " + Pipewire.qtCompiledVersion() +
+                      "\n Qt linked version: " + Pipewire.qtLinkedVersion() +
+                      "\n Platform: " + Pipewire.platformName()
             }
         }
     }

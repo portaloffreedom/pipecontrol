@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>resources/pipecontrol.png</file>
         <file>resources/main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>resources/Top.qml</file>

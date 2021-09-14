@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=PipeControl
+Exec=/usr/bin/pipecontrol %u
+Type=Application
+Terminal=false
+Icon=/usr/share/icons/pipecontrol.png

@@ -63,6 +63,8 @@ Item {
             }
 
             model: [
+                { value: 8, text: "8" },
+                { value: 16, text: "16" },
                 { value: 32, text: "32" },
                 { value: 64, text: "64" },
                 { value: 128, text: "128" },
@@ -94,6 +96,8 @@ Item {
             }
 
             model: [
+                { value: 8, text: "8" },
+                { value: 16, text: "16" },
                 { value: 32, text: "32" },
                 { value: 64, text: "64" },
                 { value: 128, text: "128" },
@@ -126,6 +130,8 @@ Item {
 
             model: [
                 { value: 0, text: qsTr("Do not force") },
+                { value: 8, text: "8" },
+                { value: 16, text: "16" },
                 { value: 32, text: "32" },
                 { value: 64, text: "64" },
                 { value: 128, text: "128" },

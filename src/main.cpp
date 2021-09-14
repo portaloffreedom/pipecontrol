@@ -7,8 +7,6 @@
 #include <QTimer>
 #include <QTranslator>
 
-#include <iostream>
-
 #include "src/qpipewire.h"
 #include "src/qpipewiresettings.h"
 #include "src/qpipewireclient.h"
@@ -23,7 +21,7 @@ int main(int argc, char *argv[])
   app.setApplicationName("PipeControl");
   app.setApplicationVersion("1.0");
   app.setQuitOnLastWindowClosed(true);
-  app.setWindowIcon(QIcon(QStringLiteral("qrc:/resources/pipecontrol.png")));
+  app.setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.png")));
 
   QTranslator translator;
   const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -38,12 +36,6 @@ int main(int argc, char *argv[])
   // Allocate before the engine to ensure that it outlives it
   QPipewire qpipewire(&argc, &argv);
   qpipewire.round_trip();
-  std::cout << "settings = " << qpipewire.settings() << std::endl;
-  std::cout << "log level = " << qpipewire.settings()->logLevel() << std::endl;
-  std::cout << "min buffer = " << qpipewire.settings()->minBuffer() << std::endl;
-  std::cout << "max buffer = " << qpipewire.settings()->maxBuffer() << std::endl;
-  std::cout << "force sample = " << qpipewire.settings()->force_sampleRate() << std::endl;
-  std::cout << "force buffer = " << qpipewire.settings()->force_buffer() << std::endl;
 
   QTimer timer;
   timer.connect(&timer, &QTimer::timeout, &qpipewire, &QPipewire::round_trip);

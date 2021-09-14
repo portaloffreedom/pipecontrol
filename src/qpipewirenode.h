@@ -19,7 +19,7 @@ class QPipewireNode : public QObject
 {
     Q_OBJECT
     // S   ID  QUANT   RATE    WAIT    BUSY   W/Q   B/Q  ERR  NAME
-    Q_PROPERTY(uint32_t id READ id NOTIFY idChanged)
+    Q_PROPERTY(int id READ id NOTIFY idChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QPipewireNode* driver READ driver NOTIFY driverChanged)
     Q_PROPERTY(bool active READ active NOTIFY activeChanged)
@@ -62,7 +62,7 @@ private:
     struct driver {
             int64_t count = 0;
             float cpu_load[3] = {0,0,0};
-            struct spa_io_clock clock;
+            struct spa_io_clock clock = {0,0,"",0,{0,0},0,0,0,0,0,{0,0,0,0,0,0,0,0}};
             uint32_t xrun_count = 0;
     } info;
 
@@ -75,7 +75,7 @@ public:
     explicit QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_dict *props);
     virtual ~QPipewireNode();
 
-    uint32_t id() const { return m_id; }
+    int id() const { return m_id; }
     QString name() const { return m_name; }
     QPipewireNode *driver() { return m_driver != this ? m_driver : nullptr; }
     bool active() { return measurement.status == 3; }

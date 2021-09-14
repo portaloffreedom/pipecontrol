@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QList>
 #include <QVariantList>
+#include <QGuiApplication>
 
 #include <pipewire/pipewire.h>
 #include <pipewire/extensions/metadata.h>
@@ -20,6 +21,7 @@ class QPipewireClient;
 class QPipewire : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString appVersion READ appVersion NOTIFY appVersionChanged)
     Q_PROPERTY(QPipewireSettings* settings READ settings NOTIFY settingsChanged)
     Q_PROPERTY(QPipewireClient* client READ client NOTIFY clientChanged)
     Q_PROPERTY(QPipewireNodeListModel* nodes READ nodes NOTIFY nodesChanged)
@@ -28,6 +30,7 @@ class QPipewire : public QObject
 
 signals:
     void quit();
+    void appVersionChanged(); //bogus
     void settingsChanged();
     void clientChanged();
     void nodesChanged();
@@ -66,6 +69,15 @@ public:
      * Runs in main thread and is blocking until all operations are done.
      */
     Q_INVOKABLE void round_trip();
+
+    QString appVersion() { return QString(PROJECT_VERSION); }
+    Q_INVOKABLE QString pipewireCompiledVersion() { return pw_get_headers_version(); }
+    Q_INVOKABLE QString pipewireLinkedVersion() { return pw_get_library_version(); }
+    Q_INVOKABLE QString platformName() { return QGuiApplication::platformName(); }
+    Q_INVOKABLE QString qtCompiledVersion() { return QStringLiteral(QT_VERSION_STR); }
+    Q_INVOKABLE QString qtLinkedVersion() { return QString::fromLocal8Bit(qVersion()); }
+    //Q_INVOKABLE QString kframeworksVersion() { return QStringLiteral(KXMLGUI_VERSION_STRING); }
+
 
     QPipewireClient* client() { return pw_client; }
     QPipewireSettings* settings() { return pw_settings; }
