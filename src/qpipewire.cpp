@@ -60,9 +60,10 @@ static void on_core_done(void *data, uint32_t id, int seq)
 void QPipewire::_on_core_done(uint32_t id, int seq)
 {
     //qDebug() << "_on_core_done(" << id << ',' << seq << ')';
-    if (id == PW_ID_CORE && sync == seq)
+    if (id == PW_ID_CORE && sync == seq) {
         round_trip_done = true;
         pw_main_loop_quit(loop);
+    }
 }
 
 static void on_core_error(void *data, uint32_t id, int seq, int res, const char *message)
@@ -224,6 +225,11 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
                              &registry_listener,
                              &registry_events,
                              this);
+
+    // QT stuff
+    connect(m_nodes, &QPipewireNodeListModel::layoutChanged, this, [this]() {
+        emit nodesChanged();
+    });
 }
 
 QPipewire::~QPipewire()

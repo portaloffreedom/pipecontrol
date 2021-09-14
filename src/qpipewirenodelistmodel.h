@@ -25,6 +25,8 @@ public:
     inline QList<QPipewireNode*> &list() { return m_nodes; }
     inline const QList<QPipewireNode*> &constList() const { return m_nodes; }
 
+    void sortList();
+
 public:
     // Delegate methods from m_nodes
     void append(QPipewireNode *node);
@@ -36,7 +38,6 @@ public:
 public:
     // QAbstractItemModel interface
     virtual int rowCount(const QModelIndex& index = QModelIndex()) const override;
-    //virtual int columnCount(const QModelIndex& index = QModelIndex()) const override;
     virtual QVariant data(const QModelIndex& index, int role) const override;
     //virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     virtual bool insertRows(int row, int count, const QModelIndex& parent) override;

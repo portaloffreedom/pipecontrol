@@ -6,6 +6,8 @@ import org.kde.kirigami 2.14 as Kirigami
 
 
 ColumnLayout {
+    width: 400
+    height: 200
 
     RowLayout {
         id: header

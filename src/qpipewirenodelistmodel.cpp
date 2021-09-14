@@ -1,4 +1,5 @@
 #include "qpipewirenodelistmodel.h"
+#include <QDebug>
 
 QPipewireNodeListModel::QPipewireNodeListModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -7,11 +8,111 @@ QPipewireNodeListModel::QPipewireNodeListModel(QObject *parent)
 QPipewireNodeListModel::~QPipewireNodeListModel()
 {}
 
+void QPipewireNodeListModel::sortList()
+{
+//    beginMoveRows(QModelIndex(), 0, m_nodes.size()-1, QModelIndex(), 0);
+//    emit layoutAboutToBeChanged();
+//    const QList<QPipewireNode*> old = m_nodes;
+//    m_nodes.clear();
+//    for (QPipewireNode* device : old) {
+//        if (device->driver() == nullptr) {
+//            m_nodes.append(device);
+//            for(QPipewireNode* client : old) {
+//                if (device == client->driver()) {
+//                    m_nodes.append(client);
+//                }
+//            }
+//        }
+//    }
+
+//    emit layoutChanged();
+//    emit changePersistentIndex(QModelIndex(), QModelIndex());
+//    endMoveRows();
+
+    // Find elements to move
+    std::list<std::pair<QPipewireNode*, int>> moving;
+    for (int i=0; i<m_nodes.size(); i++)
+    {
+        QPipewireNode* node = m_nodes[i];
+        QPipewireNode* driver = node->driver();
+
+        if (driver == nullptr)
+        {
+            // I'm a driver, no need to be moved
+            continue;
+        }
+
+        for(int j=i-1; j >= 0; j--)
+        {
+            // Search for driver in reverse
+            QPipewireNode* parent = m_nodes[j];
+            if (parent->driver() == driver) continue; // all good, keep going up
+            if (parent == driver) {
+                // found, all good, exit
+                break;
+            } else {
+                // not found
+                moving.emplace_back(node, i);
+                break;
+            }
+        }
+    }
+
+    const QList<QPipewireNode*> old = m_nodes;
+
+    // Resort unparented elements
+    while(!moving.empty())
+    {
+        auto [node,index] = moving.front();
+        QPipewireNode* driver = node->driver();
+        assert(driver != nullptr);
+        int i=0;
+        for (; i<old.size(); i++)
+        { // Find driver
+            QPipewireNode* node = m_nodes[i];
+            if (node == driver) {
+                break;
+            }
+        }
+        assert(i < old.size()); // Driver not found???
+
+        // Find new position
+        int target = i;
+//        while(target+1 < m_nodes.size() && m_nodes[target+1]->driver() == driver) {
+//            target++;
+//        }
+
+        // Move element
+        beginMoveRows(createIndex(index,0,node), index, index, createIndex(target, 0, node), target);
+        emit layoutAboutToBeChanged();
+        m_nodes.move(index, target);
+        emit layoutChanged();
+//        emit changePersistentIndex(,,);
+        endMoveRows();
+
+        moving.pop_front();
+        // refix all indexes in moving
+        for (auto &iter : moving) {
+            if (index < target) {
+                if (iter.second < index) continue;
+                if (iter.second > target) continue;
+                target--; // everyone shifts front
+            } else {
+                if (iter.second > index) continue;
+                if (iter.second < target) continue;
+                target++; // everyone shits back
+            }
+        }
+    }
+}
+
 void QPipewireNodeListModel::append(QPipewireNode* node)
 {
     beginInsertRows(QModelIndex(), m_nodes.size(), m_nodes.size());
+    node->connect(node, &QPipewireNode::driverChanged, this, &QPipewireNodeListModel::sortList);
     m_nodes.append(node);
     endInsertRows();
+    sortList();
 }
 
 bool QPipewireNodeListModel::removeOne(QPipewireNode* node)
@@ -32,11 +133,6 @@ int QPipewireNodeListModel::rowCount(const QModelIndex &parent) const
     return m_nodes.size();
 }
 
-//int QPipewireNodeListModel::columnCount(const QModelIndex& index) const
-//{
-//    return 10;
-//}
-
 #include <iostream>
 QVariant QPipewireNodeListModel::data(const QModelIndex &index, int _role) const
 {
@@ -51,45 +147,10 @@ QVariant QPipewireNodeListModel::data(const QModelIndex &index, int _role) const
         QPipewireNode *node = m_nodes.at(i);
         QVariant vNode;
         vNode.setValue(node);
-//        switch (index.column()) {
-//        case 0:
-//            vNode.setValue(QString(node->active() ? "!" : ""));
-//            break;
-//        case 1:
-//            vNode.setValue(node->id());
-//            break;
-//        case 2:
-//            vNode.setValue(node->quantum());
-//            break;
-//        case 3:
-//            vNode.setValue(node->rate());
-//            break;
-//        case 4:
-//            vNode.setValue(node->waiting());
-//            break;
-//        case 5:
-//            vNode.setValue(node->busy());
-//            break;
-//        case 6:
-//            vNode.setValue(node->id());
-//            break;
-//        case 7:
-//            vNode.setValue(node->error());
-//            break;
-//        case 8:
-//            vNode.setValue(node->xrun());
-//            break;
-//        case 9:
-//            vNode.setValue(node->name());
-//            break;
-//        default:
-//            std::cerr << "WHAT COL? " << index.column() << std::endl;
-//            vNode.setValue(QString("diocane"));
-//        }
         return vNode;
     }
     default:
-        std::cerr << "UNDEFINED ROLE" << _role << std::endl;
+        qWarning() << "UNDEFINED ROLE" << _role;
         throw std::runtime_error("Undefined role");
     }
 }
@@ -121,7 +182,7 @@ bool QPipewireNodeListModel::removeRows(int position, int count, const QModelInd
 QHash<int, QByteArray> QPipewireNodeListModel::roleNames() const
 {
     return {
-        { IndexRole, "index"},
-        { NodeRole, "node"},
+        { IndexRole, "index" },
+        { NodeRole, "node" },
     };
 }

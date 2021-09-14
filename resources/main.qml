@@ -45,18 +45,17 @@ Kirigami.ApplicationWindow {
 
             Top {
                 id: top
-//                anchors.fill: parent
                 Layout.minimumWidth: 300
             }
 
             Item {
-                Layout.minimumWidth: 300
-                Layout.fillHeight: true
+                Layout.fillHeight: false
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignCenter
+                implicitHeight: settings.implicitHeight
+                implicitWidth: settings.implicitWidth
                 Settings {
-                    id: layout
-                    anchors.fill: parent
+                    id: settings
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
 
