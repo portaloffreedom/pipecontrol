@@ -19,8 +19,8 @@ void QPipewireProfiler::_profiler_profile(const struct spa_pod *pod)
     point point;
 
     uint32_t pod_size = SPA_POD_BODY_SIZE(pod);
-    for (o = static_cast<spa_pod *>(SPA_POD_BODY(pod));							\
-         spa_pod_is_inside(pod, pod_size, o);				\
+    for (o = static_cast<spa_pod *>(SPA_POD_BODY(pod));
+         spa_pod_is_inside(pod, pod_size, o);
          o = (struct spa_pod *)spa_pod_next(o))
     {
         int res = 0;
