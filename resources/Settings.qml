@@ -171,6 +171,14 @@ Item {
                 { value: 5, text: qsTr("Trace")  },
             ]
         }
+        Text {
+            text: "Pipewire Media Session"
+        }
+
+        Button {
+            text: "Restart"
+            onClicked: Pipewire.pipewireMediaSession.restart()
+        }
 
         Text {
             text: "Client Properties"

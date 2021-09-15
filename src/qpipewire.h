@@ -17,6 +17,7 @@ class QPipewireClient;
 #include "src/qpipewirenode.h"
 #include "src/qpipewireprofiler.h"
 #include "src/qpipewirenodelistmodel.h"
+#include "src/systemdservice.h"
 
 class QPipewire : public QObject
 {
@@ -27,19 +28,22 @@ class QPipewire : public QObject
     Q_PROPERTY(QPipewireNodeListModel* nodes READ nodes NOTIFY nodesChanged)
     Q_PROPERTY(QList<QPipewireNode*> nodeList READ nodeList NOTIFY nodesChanged)
     Q_PROPERTY(QPipewireProfiler* profiler READ profiler NOTIFY profilerChanged)
+    Q_PROPERTY(SystemdService* pipewireMediaSession READ pipewireMediaSession NOTIFY pipewireMediaSessionChanged)
 
 signals:
     void quit();
-    void appVersionChanged(); //bogus
-    void settingsChanged();
-    void clientChanged();
-    void nodesChanged();
-    void profilerChanged();
     void registryObject(uint32_t id,
                         uint32_t permissions,
                         const char *type,
                         uint32_t version,
                         const struct spa_dict *props);
+
+    void appVersionChanged(); //bogus, never emitted
+    void settingsChanged();
+    void clientChanged();
+    void nodesChanged();
+    void profilerChanged();
+    void pipewireMediaSessionChanged();
 
 private:
     struct pw_main_loop *loop = nullptr;
@@ -59,6 +63,7 @@ private:
     QPipewireSettings *pw_settings = nullptr;
     QPipewireNodeListModel *m_nodes = nullptr;
     QPipewireProfiler *pw_profiler = nullptr;
+    SystemdService *pipewire_media_session = nullptr;
 
 public:
     explicit QPipewire(int *argc, char **argv[], QObject *parent = nullptr);
@@ -84,6 +89,7 @@ public:
     QPipewireProfiler* profiler() { return pw_profiler; }
     QPipewireNodeListModel* nodes() { return m_nodes; }
     QList<QPipewireNode*> nodeList() { return m_nodes->list(); }
+    SystemdService* pipewireMediaSession() { return pipewire_media_session; }
     QObjectList nodeObjectList() {
         auto list = QObjectList();
         for(int i=0; i<m_nodes->size(); i++) {

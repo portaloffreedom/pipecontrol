@@ -109,7 +109,7 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
     {
         QPipewireNode *i;
         foreach(i, pipewire->m_nodes->list()) {
-            if (i->id() == id) {
+            if (i && i->id() == id) {
                 node = i;
                 break;
             }
@@ -164,7 +164,7 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
     {
         QPipewireNode *i;
         foreach(i, pipewire->m_nodes->list()) {
-            if (i->id() == id) {
+            if (i && i->id() == id) {
                 node = i;
                 break;
             }

@@ -38,7 +38,7 @@ void QPipewire::resync()
 }
 
 //-----------------------------------------------------------------------------
-static void do_quit(void *userdata, int signal_number)
+static void do_quit(void *userdata, int /*signal_number*/)
 {
     QPIPEWIRE_CAST(userdata);
     _this->_quit();
@@ -155,17 +155,27 @@ void QPipewire::_registry_event_remove(uint32_t id)
     qWarning() << "Attempting to remove id(" << id << ")";
     QPipewireNode *node = nullptr;
     for(int i=0; i<m_nodes->size(); i++) {
-        if ((*m_nodes)[i]->id() == id) {
-            node = (*m_nodes)[i];
+        QPipewireNode *candidate = (*m_nodes)[i];
+        if (candidate && candidate->id() == id) {
+            node = candidate;
             break;
         }
     }
     if (node != nullptr) {
         // ALL interfaces that are not NODES are ignored here.
         qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
-        m_nodes->removeOne(node);
-        delete node;
+        int index = m_nodes->list().indexOf(node);
+        m_nodes->resetOne(index);
         emit nodesChanged();
+        node->connect(node, &QObject::destroyed, this, [this]() {
+            m_nodes->cleanup();
+            emit nodesChanged();
+        });
+        QTimer *t = new QTimer(node);
+        t->connect(t, &QTimer::timeout, node, &QObject::deleteLater);
+        t->setSingleShot(true);
+        t->start(1000);
+        //node->deleteLater();
     }
 }
 
@@ -226,6 +236,8 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
                              &registry_events,
                              this);
 
+    pipewire_media_session = new SystemdService("pipewire-media-session", true);
+
     // QT stuff
     connect(m_nodes, &QPipewireNodeListModel::layoutChanged, this, [this]() {
         emit nodesChanged();
@@ -234,6 +246,8 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
 
 QPipewire::~QPipewire()
 {
+    delete pipewire_media_session;
+
     if (pw_settings != nullptr) {
         delete pw_settings;
     }

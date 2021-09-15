@@ -23,9 +23,9 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
-#find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
-#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
-find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Quick LinguistTools QuickControls2 REQUIRED)
+#find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools QuickControls2 DBus REQUIRED)
+#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools QuickControls2 DBus REQUIRED)
+find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Quick LinguistTools QuickControls2 DBus REQUIRED)
 #find_package(KF5 ${KF_MIN_VERSION} COMPONENTS Kirigami2 CoreAddons REQUIRED)
 
 find_package(PkgConfig)
@@ -51,6 +51,10 @@ set(PROJECT_SOURCES
         src/qpipewireprofiler.cpp
         src/qpipewirenodelistmodel.h
         src/qpipewirenodelistmodel.cpp
+        src/alsaproperties.h
+        src/alsaproperties.cpp
+        src/systemdservice.h
+        src/systemdservice.cpp
         qml.qrc
         ${TS_FILES}
 )
@@ -78,7 +82,7 @@ target_compile_definitions(pipecontrol PRIVATE
 target_include_directories(pipecontrol
   PRIVATE ${libpipewire_INCLUDE_DIRS})
 target_link_libraries(pipecontrol
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::QuickControls2
+  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::QuickControls2 Qt${QT_VERSION_MAJOR}::DBus
   PRIVATE ${libpipewire_LIBRARIES}
 #  PRIVATE KF5::Kirigami2
 )

@@ -34,6 +34,9 @@ void QPipewireNodeListModel::sortList()
     for (int i=0; i<m_nodes.size(); i++)
     {
         QPipewireNode* node = m_nodes[i];
+        if (node == nullptr) {
+            continue;
+        }
         QPipewireNode* driver = node->driver();
 
         if (driver == nullptr)
@@ -46,7 +49,7 @@ void QPipewireNodeListModel::sortList()
         {
             // Search for driver in reverse
             QPipewireNode* parent = m_nodes[j];
-            if (parent->driver() == driver) continue; // all good, keep going up
+            if (parent == nullptr || parent->driver() == driver) continue; // all good, keep going up
             if (parent == driver) {
                 // found, all good, exit
                 break;
@@ -74,21 +77,25 @@ void QPipewireNodeListModel::sortList()
                 break;
             }
         }
-        assert(i < old.size()); // Driver not found???
 
         // Find new position
         int target = i;
+        if (i >= old.size()) {
+            // Driver not found???
+            target = old.size()-1;
+        }
+
 //        while(target+1 < m_nodes.size() && m_nodes[target+1]->driver() == driver) {
 //            target++;
 //        }
 
         // Move element
-        beginMoveRows(createIndex(index,0,node), index, index, createIndex(target, 0, node), target);
+//        beginMoveRows(createIndex(index,0,node), index, index, createIndex(target, 0, node), target);
         emit layoutAboutToBeChanged();
         m_nodes.move(index, target);
         emit layoutChanged();
 //        emit changePersistentIndex(,,);
-        endMoveRows();
+//        endMoveRows();
 
         moving.pop_front();
         // refix all indexes in moving
@@ -108,24 +115,65 @@ void QPipewireNodeListModel::sortList()
 
 void QPipewireNodeListModel::append(QPipewireNode* node)
 {
+    qWarning() << "Adding new node " << node->name();
     beginInsertRows(QModelIndex(), m_nodes.size(), m_nodes.size());
     node->connect(node, &QPipewireNode::driverChanged, this, &QPipewireNodeListModel::sortList);
+    emit layoutAboutToBeChanged();
     m_nodes.append(node);
+    emit layoutChanged();
     endInsertRows();
     sortList();
 }
 
 bool QPipewireNodeListModel::removeOne(QPipewireNode* node)
 {
+    qWarning() << "Removing node" << node->name();
     int index = m_nodes.indexOf(node);
     if (index != -1) {
+        return removeOne(index);
+    } else {
+        return false;
+    }
+}
+
+bool QPipewireNodeListModel::removeOne(int index)
+{
+    if (index >= 0 && index < m_nodes.size()) {
         beginRemoveRows(QModelIndex(), index, index);
+        emit layoutAboutToBeChanged();
         m_nodes.removeAt(index);
+        emit layoutChanged();
         endRemoveRows();
         return true;
     } else {
         return false;
     }
+}
+
+bool QPipewireNodeListModel::resetOne(QPipewireNode* node)
+{
+    qWarning() << "Resetting node" << node->name();
+    int index = m_nodes.indexOf(node);
+    if (index != -1) {
+        return resetOne(index);
+    } else {
+        return false;
+    }
+}
+
+bool QPipewireNodeListModel::resetOne(int index)
+{
+    if (index >= 0 && index < m_nodes.size()) {
+        m_nodes[index] = nullptr;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void QPipewireNodeListModel::cleanup()
+{
+    m_nodes.removeAll(nullptr);
 }
 
 int QPipewireNodeListModel::rowCount(const QModelIndex &parent) const

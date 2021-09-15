@@ -10,6 +10,7 @@
 #include "src/qpipewire.h"
 #include "src/qpipewiresettings.h"
 #include "src/qpipewireclient.h"
+#include "src/systemdservice.h"
 
 int main(int argc, char *argv[])
 {

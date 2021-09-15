@@ -33,6 +33,11 @@ public:
     explicit QPipewireClient(QPipewire *parent, uint32_t id, const char *type);
     virtual ~QPipewireClient();
 
+    QString property(const QString &key)
+    {
+        return m_properties[key];
+    }
+
     QVariantMap properties()
     {
         QVariantMap rval;
@@ -57,8 +62,6 @@ public:
         }
         return rval;
     }
-
-
 
     void _client_info(const struct pw_client_info *info);
 };
