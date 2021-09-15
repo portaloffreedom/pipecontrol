@@ -78,25 +78,25 @@ public:
     int id() const { return m_id; }
     QString name() const { return m_name; }
     QPipewireNode *driver() { return m_driver != this ? m_driver : nullptr; }
-    bool active() { return measurement.status == 3; }
-    double waiting() { return (measurement.awake - measurement.signal) / 1000000000.f; }
-    double busy() { return (measurement.finish - measurement.awake) / 1000000000.f; }
-    int quantum() {
+    bool active() const { return measurement.status == 3; }
+    double waiting() const { return (measurement.awake - measurement.signal) / 1000000000.f; }
+    double busy() const { return (measurement.finish - measurement.awake) / 1000000000.f; }
+    int quantum() const {
         if (m_driver == this) {
             return info.clock.duration * info.clock.rate.num;
         } else {
             return measurement.latency.num;
         }
     }
-    int rate() {
+    int rate() const {
         if (m_driver == this) {
             return info.clock.rate.denom;
         } else {
             return measurement.latency.denom;
         }
     }
-    int error() { return errors; }
-    int xrun() { return info.xrun_count; }
+    int error() const { return errors; }
+    int xrun() const { return info.xrun_count; }
 
     Q_INVOKABLE QString formatTime(double val) const;
     Q_INVOKABLE QString formatPercentage(float val, float quantum) const;
@@ -112,6 +112,10 @@ private:
         else
             return 0;
     }
+
+    void setDriver(QPipewireNode *newDriver);
+    void setMeasurement(const struct measurement &measure);
+    void setInfo(const struct driver &info);
 
     friend class QPipewireProfiler;
 };

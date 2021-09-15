@@ -119,24 +119,17 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
     if (node == nullptr)
         return -ENOENT;
 
-    node->m_driver = node;
-    node->measurement = measure;
-    node->info = point->info;
+    node->setDriver(node);
+    node->setMeasurement(measure);
+    node->setInfo(point->info);
     point->driver = node;
 
     if (measure.status != 3) {
         node->errors++;
+        emit node->errorChanged();
         if (node->last_error_status == -1)
             node->last_error_status = measure.status;
     }
-
-    emit node->driverChanged();
-    emit node->activeChanged();
-    emit node->waitingChanged();
-    emit node->busyChanged();
-    // info changed
-    emit node->quantumChanged();
-    emit node->rateChanged();
 
     return 0;
 }
@@ -144,7 +137,7 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
 int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct point *point)
 {
     uint32_t id = 0;
-    const char *name =  NULL;
+    const char *name = nullptr;
     struct QPipewireNode::measurement measure;
     QPipewireNode *node = nullptr;
 
@@ -174,20 +167,14 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
     if (node == nullptr)
         return -ENOENT;
 
-    node->measurement = measure;
-    node->m_driver = point->driver;
+    node->setMeasurement(measure);
+    node->setDriver(point->driver);
     if (measure.status != 3) {
         node->errors++;
+        emit node->errorChanged();
         if (node->last_error_status == -1)
             node->last_error_status = measure.status;
     }
-
-    emit node->driverChanged();
-    emit node->activeChanged();
-    emit node->waitingChanged();
-    emit node->busyChanged();
-    emit node->quantumChanged();
-    emit node->rateChanged();
 
     return 0;
 }

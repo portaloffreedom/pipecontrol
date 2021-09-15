@@ -61,3 +61,38 @@ QIcon QPipewireNode::activeIcon(bool active) const
         return QIcon::fromTheme("media-playback-pause");
     }
 }
+
+void QPipewireNode::setDriver(QPipewireNode* newDriver)
+{
+    if (newDriver == m_driver) return;
+    m_driver = newDriver;
+    emit driverChanged();
+}
+
+void QPipewireNode::setMeasurement(const struct QPipewireNode::measurement &measure)
+{
+    const struct measurement old = this->measurement;
+    this->measurement = measure;
+    if (old.status != measure.status) emit activeChanged();
+    if (old.signal != measure.signal || old.awake != measure.awake)
+        emit waitingChanged();
+    if (old.finish != measure.finish || old.awake != measure.awake)
+        emit busyChanged();
+    if (m_driver != this && old.latency.num != measure.latency.num)
+        emit quantumChanged();
+    if (m_driver != this && old.latency.denom != measure.latency.denom)
+        emit rateChanged();
+}
+
+void QPipewireNode::setInfo(const struct QPipewireNode::driver &info)
+{
+    const struct driver old = this->info;
+    this->info = info;
+    if (m_driver == this &&
+        (old.clock.duration != info.clock.duration || old.clock.rate.num != info.clock.rate.num))
+        emit quantumChanged();
+    if (m_driver == this && old.clock.rate.denom != info.clock.rate.denom)
+        emit rateChanged();
+    if (old.xrun_count != info.xrun_count)
+        emit xrunChanged();
+}
