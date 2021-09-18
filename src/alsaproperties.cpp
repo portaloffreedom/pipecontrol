@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QTextStream>
+#include <QRegularExpression>
 
 AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
     : QObject(parent)
@@ -64,6 +66,78 @@ void AlsaProperties::readUserConf()
     readConf(userConf);
 }
 
+template<typename T>
+T _parse(const QString &/*value*/) {
+    throw std::runtime_error("diocane");
+}
+template<>
+int _parse<int>(const QString &value) {
+    return value.toInt();
+}
+template<>
+bool _parse<bool>(const QString &value) {
+    if (value == "true") {
+        return true;
+    } else if (value == "false") {
+        return false;
+    } else {
+        throw std::runtime_error((QString("Could not parse bool type from: ") + value).toStdString());
+    }
+}
+
+template<typename T>
+QString _tostring(const T /*value*/) {
+    throw std::runtime_error("diocane");
+}
+template<>
+QString _tostring<int>(const int value) {
+    return QString::number(value);
+}
+template<>
+QString _tostring<bool>(const bool value) {
+    if (value) {
+        return "true";
+    } else {
+        return "false";
+    }
+}
+
+template<typename T>
+bool parse_line(const QString &line, const QString &target, T &value)
+{
+    QRegularExpression re(QString("(#*)\\s*") + target + "\\s*=\\s*([\\d|\\w]+)");
+    QRegularExpressionMatch match = re.match(line);
+    if(!match.hasMatch()) {
+        throw std::runtime_error((QString("Could not find ") + target).toStdString());
+    }
+
+    if (!match.captured(1).isEmpty()) {
+        return false;
+    }
+
+    value = _parse<T>(match.captured(2));
+    return true;
+}
+
+template<typename T>
+void parse_and_change_line(QString &line, const QString &target, T value)
+{
+    QRegularExpression re(QString("(#*)\\s*") + target + "\\s*=\\s*([\\d|\\w]+)");
+    QRegularExpressionMatch match = re.match(line);
+    if(!match.hasMatch()) {
+        throw std::runtime_error((QString("Could not find ") + target).toStdString());
+    }
+
+    if (!match.captured(1).isEmpty()) {
+        line.remove(match.capturedStart(1), match.capturedLength(1));
+        match = re.match(line);
+    }
+
+    line.remove(match.capturedStart(2), match.capturedLength(2));
+    line.insert(match.capturedStart(2), _tostring<T>(value));
+    return;
+}
+
 void AlsaProperties::readConf(const QString& filename)
 {
     QFile conf(filename);
@@ -81,9 +155,9 @@ void AlsaProperties::readConf(const QString& filename)
         if (line.startsWith('#')) continue;
 
         if (line.contains("api.alsa.disable-batch")) {
-//            line.
+            parse_line(line, "api.alsa.disable-batch", _batchDisabled);
         } else if (line.contains("api.alsa.period-size")) {
-
+            parse_line(line, "api.alsa.period-size", _periodSize);
         }
     }
 }
@@ -93,17 +167,55 @@ void AlsaProperties::writeUserConf() const
     QFileInfo confInfo(userConf);
     QDir folder = QDir(confInfo.absolutePath());
     std::cout << "Creating user conf folder: " << folder.absolutePath().toStdString() << std::endl;
+    // This will return true even if the folder already exists.
     if (!folder.mkpath(".")) {
         throw std::runtime_error("Could not create user conf folder");
     }
 
-    QFile conf(userConf);
-    std::cout << "Writing user conf file: " << folder.absolutePath().toStdString() << std::endl;
-    if (!conf.open(QIODevice::ReadWrite | QIODevice::Text)) {
-        throw std::runtime_error("Could not write user conf file");
+    // Read file
+    QList<QString> lines;
+    {
+        QFile userConfF(userConf);
+        QFile globalConfF(globalConf);
+        QFile *inputFile = &userConfF;
+        if (!userConfF.exists()) {
+            inputFile = &globalConfF;
+        }
+
+        if (!inputFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
+            throw std::runtime_error("Could not write user conf file");
+        }
+
+        while (!inputFile->atEnd()) {
+            QString line = inputFile->readLine();
+            QString trimmed = line.trimmed();
+            if (trimmed.contains("api.alsa.disable-batch")) {
+                parse_and_change_line(line, "api.alsa.disable-batch", this->_batchDisabled);
+            } else if (trimmed.contains("api.alsa.period-size")) {
+                parse_and_change_line(line, "api.alsa.period-size", this->_periodSize);
+            }
+
+            lines.append(line);
+        }
+
+        inputFile->close();
     }
 
-    //TODO read file
+    std::cout << "Writing user conf file: " << folder.absolutePath().toStdString() << std::endl;
 
-    //TODO write with lines changed
+    {
+        // Write with lines changed
+        QFile outFile(userConf);
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            throw std::runtime_error("Could not write user conf file");
+        }
+
+        QTextStream out(&outFile);
+        for(QString &line : lines) {
+            out << line << '\n';
+        }
+
+        outFile.close();
+    }
+
 }

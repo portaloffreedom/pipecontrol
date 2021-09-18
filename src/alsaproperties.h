@@ -24,8 +24,8 @@ public:
     explicit AlsaProperties(QPipewireClient *client, QObject *parent = nullptr);
     virtual ~AlsaProperties() = default;
 
-    bool batchDisabled() const { return _batchDisabled; }
-    int periodSize() const { return _periodSize; }
+    [[nodiscard]] bool batchDisabled() const { return _batchDisabled; }
+    [[nodiscard]] int periodSize() const { return _periodSize; }
     void setBatchDisabled(bool disabled);
     void setPeriodSize(int newPeriod);
 
