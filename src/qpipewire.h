@@ -83,6 +83,7 @@ public:
     Q_INVOKABLE QString qtLinkedVersion() { return QString::fromLocal8Bit(qVersion()); }
     //Q_INVOKABLE QString kframeworksVersion() { return QStringLiteral(KXMLGUI_VERSION_STRING); }
 
+    Q_INVOKABLE static QString formatTime(double val);
 
     QPipewireClient* client() { return pw_client; }
     QPipewireSettings* settings() { return pw_settings; }

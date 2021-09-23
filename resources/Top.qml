@@ -15,11 +15,12 @@ ColumnLayout {
         Layout.fillWidth: true
 
         //Text { text: index }
+//        Text {
+//            Layout.preferredWidth: PlasmaCore.Units.iconSizes.smallMedium +30
+//            text: "ACTIVE"
+//        }
         Text {
-            Layout.preferredWidth: PlasmaCore.Units.iconSizes.smallMedium +30
-            text: "ACTIVE"
-        }
-        Text {
+            Layout.leftMargin: 10
             Layout.preferredWidth: 40
             Layout.alignment: Qt.AlignRight
             text: "ID"
@@ -67,7 +68,7 @@ ColumnLayout {
         id: topList
         Layout.fillWidth: true
         Layout.fillHeight: true
-        model: Pipewire.nodeList
+        model: Pipewire.nodes
         delegate: rowDelegate
         clip: true
         highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
@@ -81,7 +82,17 @@ ColumnLayout {
             height: nodeRow.height
 
             required property int index
-            property var node: topList.model[index]
+            required property int id
+            required property bool active
+            required property int rate
+            required property int quantum
+            required property double wait
+            required property double busy
+            required property string name
+            required property int driverID
+
+            //required property var display
+            //property var node: Pipewire.nodeList[index]
 
             RowLayout {
                 id: nodeRow
@@ -92,18 +103,29 @@ ColumnLayout {
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
 
-                //Text { text: index }
-                Kirigami.Icon {
-                    Layout.leftMargin: 10
-                    Layout.rightMargin: 10
-                    width: PlasmaCore.Units.iconSizes.smallMedium
-                    height: PlasmaCore.Units.iconSizes.smallMedium
-                    source: node.active ? "media-playback-start" : "media-playback-pause"
-                }
+//                Text { text: active }
+//                Kirigami.Icon {
+//                    visible: active
+//                    Layout.leftMargin: 10
+//                    Layout.rightMargin: 10
+//                    width: PlasmaCore.Units.iconSizes.smallMedium
+//                    height: PlasmaCore.Units.iconSizes.smallMedium
+////                    source: active ? "media-playback-start" : "media-playback-pause"
+//                    source: "media-playback-start"
+//                }
+//                Kirigami.Icon {
+//                    visible: !active
+//                    Layout.leftMargin: 10
+//                    Layout.rightMargin: 10
+//                    width: PlasmaCore.Units.iconSizes.smallMedium
+//                    height: PlasmaCore.Units.iconSizes.smallMedium
+//                    source: "media-playback-pause"
+//                }
                 Text {
+                    Layout.leftMargin: 10
                     Layout.preferredWidth: 40;
                     Layout.alignment: Qt.AlignRight;
-                    text: node.id
+                    text: id
                 }
                 Rectangle {
                     Layout.preferredWidth: 50
@@ -111,7 +133,7 @@ ColumnLayout {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        text: node.rate === 0 ? "" : node.rate
+                        text: rate
                     }
                 }
                 Rectangle {
@@ -120,7 +142,7 @@ ColumnLayout {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        text: node.quantum === 0 ? "" : node.quantum
+                        text: quantum
                     }
                 }
                 Rectangle {
@@ -128,7 +150,7 @@ ColumnLayout {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        text: node.formatTime(node.waiting)
+                        text: Pipewire.formatTime(wait)
                     }
                 }
                 Rectangle {
@@ -136,13 +158,13 @@ ColumnLayout {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        text: node.formatTime(node.busy)
+                        text: Pipewire.formatTime(busy)
                     }
                 }
                 Text {
                     Layout.fillWidth: true
                     Layout.leftMargin: 15
-                    text: (node.driver ? " + " : "") + node.name
+                    text: (driverID > 0 ? " + " : "") + name
                 }
             }
 

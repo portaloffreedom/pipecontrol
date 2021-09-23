@@ -28,24 +28,6 @@ QPipewireNode::~QPipewireNode()
 
 }
 
-
-QString QPipewireNode::formatTime(double val) const
-{
-    val *= 1000000000.0f;
-    QString buf;
-    if (val < 1000000llu) {
-        val /= 1000.0f;
-        buf = QString::asprintf("%5.1fµs", val);
-    } else if (val < 1000000000llu) {
-        val /= 1000000.0f;
-        buf = QString::asprintf("%5.1fms", val);
-    } else {
-        val /= 1000000000.0f;
-        buf = QString::asprintf("%5.1fs", val);
-    }
-    return buf;
-}
-
 QString QPipewireNode::formatPercentage(float val, float quantum) const
 {
     QString buf;

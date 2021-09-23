@@ -98,7 +98,6 @@ public:
     int error() const { return errors; }
     int xrun() const { return info.xrun_count; }
 
-    Q_INVOKABLE QString formatTime(double val) const;
     Q_INVOKABLE QString formatPercentage(float val, float quantum) const;
     Q_INVOKABLE QIcon activeIcon(bool active) const;
 

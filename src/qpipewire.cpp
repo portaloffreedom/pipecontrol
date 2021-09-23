@@ -28,6 +28,23 @@ void QPipewire::round_trip()
     }
 }
 
+QString QPipewire::formatTime(double val)
+{
+    val *= 1000000000.0f;
+    QString buf;
+    if (val < 1000000llu) {
+        val /= 1000.0f;
+        buf = QString::asprintf("%5.1fµs", val);
+    } else if (val < 1000000000llu) {
+        val /= 1000000.0f;
+        buf = QString::asprintf("%5.1fms", val);
+    } else {
+        val /= 1000000000.0f;
+        buf = QString::asprintf("%5.1fs", val);
+    }
+    return buf;
+}
+
 void QPipewire::resync()
 {
     round_trip_done = false;
@@ -165,17 +182,9 @@ void QPipewire::_registry_event_remove(uint32_t id)
         // ALL interfaces that are not NODES are ignored here.
         qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
         int index = m_nodes->list().indexOf(node);
-        m_nodes->resetOne(index);
+        m_nodes->removeOne(index);
         emit nodesChanged();
-        node->connect(node, &QObject::destroyed, this, [this]() {
-            m_nodes->cleanup();
-            emit nodesChanged();
-        });
-        QTimer *t = new QTimer(node);
-        t->connect(t, &QTimer::timeout, node, &QObject::deleteLater);
-        t->setSingleShot(true);
-        t->start(1000);
-        //node->deleteLater();
+        node->deleteLater();
     }
 }
 

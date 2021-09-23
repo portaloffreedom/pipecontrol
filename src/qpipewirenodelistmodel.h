@@ -12,7 +12,15 @@ class QPipewireNodeListModel : public QAbstractListModel
 
     enum NodeRoles {
         IndexRole = Qt::UserRole + 1,
-        NodeRole
+        NodeRole,
+        IDRole,
+        ActiveRole,
+        RateRole,
+        QuantumRole,
+        WaitRole,
+        BusyRole,
+        NameRole,
+        DriverIDRole,
     };
 
 private:
@@ -32,9 +40,6 @@ public:
     void append(QPipewireNode *node);
     bool removeOne(QPipewireNode *node);
     bool removeOne(int index);
-    bool resetOne(QPipewireNode *node);
-    bool resetOne(int index);
-    void cleanup();
     inline int size() const { return m_nodes.size(); }
     inline QPipewireNode*& operator[](int index) { return m_nodes[index]; }
     inline QPipewireNode* const& operator[](int index) const { return m_nodes[index]; }
@@ -47,4 +52,6 @@ public:
     virtual bool insertRows(int row, int count, const QModelIndex& parent) override;
     virtual bool removeRows(int row, int count, const QModelIndex& parent) override;
     virtual QHash<int, QByteArray> roleNames() const override;
+
+    void rowChanged(QPipewireNode* node, int role);
 };
