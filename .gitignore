@@ -59,6 +59,9 @@ Thumbs.db
 *.vcxproj
 *vcxproj.*
 
+# Intellij configuration files
+.idea/
+
 # MinGW generated files
 *.Debug
 *.Release
