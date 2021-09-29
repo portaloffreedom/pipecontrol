@@ -56,7 +56,7 @@ Kirigami.ApplicationWindow {
                 }
             }
 
-            Text {
+            Label {
                 text: "Pipecontrol v" + Pipewire.appVersion +
                       "\nWork in progress by @portaloffreedom." +
                       "\nLicense: GPLv3" +

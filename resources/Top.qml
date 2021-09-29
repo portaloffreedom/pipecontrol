@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.12
 import Pipewire 1.0
+import QtQuick.Controls 2.15
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.kirigami 2.14 as Kirigami
 
@@ -14,12 +15,12 @@ ColumnLayout {
         height: 30
         Layout.fillWidth: true
 
-        //Text { text: index }
-//        Text {
+        //Label { text: index }
+//        Label {
 //            Layout.preferredWidth: PlasmaCore.Units.iconSizes.smallMedium +30
 //            text: "ACTIVE"
 //        }
-        Text {
+        Label {
             Layout.leftMargin: 10
             Layout.preferredWidth: 40
             Layout.alignment: Qt.AlignRight
@@ -27,7 +28,7 @@ ColumnLayout {
         }
         Rectangle {
             Layout.preferredWidth: 50
-            Text {
+            Label {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 text: "RATE"
@@ -35,7 +36,7 @@ ColumnLayout {
         }
         Rectangle {
             Layout.preferredWidth: 70
-            Text {
+            Label {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 text: "QUANT"
@@ -43,7 +44,7 @@ ColumnLayout {
         }
         Rectangle {
             Layout.preferredWidth: 70
-            Text {
+            Label {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 text: "WAIT"
@@ -51,13 +52,13 @@ ColumnLayout {
         }
         Rectangle {
             Layout.preferredWidth: 70
-            Text {
+            Label {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 text: "BUSY"
             }
         }
-        Text {
+        Label {
             Layout.leftMargin: 15
             Layout.fillWidth: true
             text: "NAME"
@@ -103,7 +104,7 @@ ColumnLayout {
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
 
-//                Text { text: active }
+//                Label { text: active }
 //                Kirigami.Icon {
 //                    visible: active
 //                    Layout.leftMargin: 10
@@ -121,7 +122,7 @@ ColumnLayout {
 //                    height: PlasmaCore.Units.iconSizes.smallMedium
 //                    source: "media-playback-pause"
 //                }
-                Text {
+                Label {
                     Layout.leftMargin: 10
                     Layout.preferredWidth: 40;
                     Layout.alignment: Qt.AlignRight;
@@ -130,7 +131,7 @@ ColumnLayout {
                 Rectangle {
                     Layout.preferredWidth: 50
                     Layout.alignment: Qt.AlignRight;
-                    Text {
+                    Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: rate
@@ -139,7 +140,7 @@ ColumnLayout {
                 Rectangle {
                     Layout.preferredWidth: 70
                     Layout.alignment: Qt.AlignRight;
-                    Text {
+                    Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: quantum
@@ -147,7 +148,7 @@ ColumnLayout {
                 }
                 Rectangle {
                     Layout.preferredWidth: 70
-                    Text {
+                    Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: Pipewire.formatTime(wait)
@@ -155,13 +156,13 @@ ColumnLayout {
                 }
                 Rectangle {
                     Layout.preferredWidth: 70
-                    Text {
+                    Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: Pipewire.formatTime(busy)
                     }
                 }
-                Text {
+                Label {
                     Layout.fillWidth: true
                     Layout.leftMargin: 15
                     text: (driverID > 0 ? " + " : "") + name

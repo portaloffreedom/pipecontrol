@@ -15,7 +15,7 @@ Item {
 //        columnSpacing: 5
 //        rowSpacing: 5
 
-        Text {
+        Label {
             text: qsTr("Force sample rate")
         }
 
@@ -44,7 +44,7 @@ Item {
             ]
         }
 
-        Text {
+        Label {
             text: qsTr("Minimum buffer")
         }
 
@@ -77,7 +77,7 @@ Item {
             ]
         }
 
-        Text {
+        Label {
             text: qsTr("Max buffer")
         }
 
@@ -110,7 +110,7 @@ Item {
             ]
         }
 
-        Text {
+        Label {
             text: qsTr("Force buffer size")
         }
 
@@ -144,7 +144,7 @@ Item {
             ]
         }
 
-        Text {
+        Label {
             text: qsTr("Log Level")
         }
 
@@ -172,7 +172,7 @@ Item {
             ]
         }
 
-        Text {
+        Label {
             text: "Alsa Batching (USB Device) extra buffer"
         }
 
@@ -182,7 +182,7 @@ Item {
             onCheckedChanged: Pipewire.alsaProperties.batchDisabled = !checked
         }
 
-        Text {
+        Label {
             text: "\"Alsa Batch\" extra buffer"
         }
 
@@ -191,7 +191,7 @@ Item {
             onTextChanged: Pipewire.alsaProperties.periodSize = text
         }
 
-        Text {
+        Label {
             text: "Pipewire Media Session"
         }
 
@@ -200,11 +200,11 @@ Item {
             onClicked: Pipewire.pipewireMediaSession.restart()
         }
 
-        Text {
+        Label {
             text: "Client Properties"
         }
 
-        Text {}
+        Label {}
 
         ComboBox {
             id: clientBox
@@ -217,7 +217,7 @@ Item {
             model: Pipewire.client.propertiesList
         }
 
-        Text {
+        Label {
             text: clientBox.currentValue
         }
     }
