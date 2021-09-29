@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pipecontrol VERSION 0.1.2 LANGUAGES CXX)
+project(pipecontrol VERSION 0.1.3 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -73,7 +73,8 @@ else()
 endif()
 
 target_compile_definitions(pipecontrol
-  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
+  PRIVATE -DPROJECT_VERSION="${CMAKE_PROJECT_VERSION}")
 target_compile_options(pipecontrol
   PRIVATE ${libpipewire_CFLAGS_OTHER})
 target_compile_definitions(pipecontrol PRIVATE
