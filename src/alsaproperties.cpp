@@ -10,10 +10,16 @@
 #include <QTextStream>
 #include <QRegularExpression>
 
+bool is_valid_file(const std::string &path) {
+    return std::filesystem::exists(path)
+            && !std::filesystem::is_directory(path);
+}
+
 AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
     : QObject(parent)
 {
-    std::string config_prefix = client->property("config.prefix").toStdString();
+    std::string config_prefix = client->has_property("config.prefix") ?
+                                    client->property("config.prefix").toStdString() : "media-session.d";
     const char *home_folder = std::getenv("HOME");
     if (home_folder == nullptr) {
         home_folder = "";
@@ -32,11 +38,15 @@ AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
     this->globalConf = global_conf_filename.str().c_str();
     this->userConf = user_conf_filename.str().c_str();
 
-    if (std::filesystem::is_regular_file(globalConf.toStdString())) {
-        this->readGlobalConf();
-    }
-    if (std::filesystem::is_regular_file(userConf.toStdString())) {
+    bool has_global = is_valid_file(globalConf.toStdString());
+    bool has_user = is_valid_file(userConf.toStdString());
+
+    if (has_user) {
         this->readUserConf();
+    } else if (has_global) {
+        this->readGlobalConf();
+    } else {
+        throw std::runtime_error("Could not find pipewire alsa monitor config file!");
     }
 }
 
@@ -155,9 +165,11 @@ void AlsaProperties::readConf(const QString& filename)
         if (line.startsWith('#')) continue;
 
         if (line.contains("api.alsa.disable-batch")) {
-            parse_line(line, "api.alsa.disable-batch", _batchDisabled);
+            bool found = parse_line(line, "api.alsa.disable-batch", _batchDisabled);
+            if (found) emit batchDisabledChanged(_batchDisabled);
         } else if (line.contains("api.alsa.period-size")) {
-            parse_line(line, "api.alsa.period-size", _periodSize);
+            bool found = parse_line(line, "api.alsa.period-size", _periodSize);
+            if (found) emit periodSizeChanged(_periodSize);
         }
     }
 }
@@ -212,7 +224,7 @@ void AlsaProperties::writeUserConf() const
 
         QTextStream out(&outFile);
         for(QString &line : lines) {
-            out << line << '\n';
+            out << line;
         }
 
         outFile.close();

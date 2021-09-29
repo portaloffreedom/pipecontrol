@@ -132,6 +132,14 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
     {
         pw_client = new QPipewireClient(this, id, type);
         emit clientChanged();
+
+        // Shot only once when data has arrived
+        QMetaObject::Connection *const connection = new QMetaObject::Connection;
+        *connection = connect(pw_client, &QPipewireClient::propertiesChanged, [this, connection]() {
+            alsa_properties = new AlsaProperties(pw_client, this);
+            emit alsaPropertiesChanged();
+            delete connection;
+        });
     }
     else if (strcmp(type, PW_TYPE_INTERFACE_Metadata) == 0)
     {
@@ -262,6 +270,9 @@ QPipewire::~QPipewire()
     }
     if (pw_client != nullptr) {
         delete pw_client;
+    }
+    if (alsa_properties != nullptr) {
+        delete alsa_properties;
     }
     if (pw_profiler != nullptr) {
         delete pw_profiler;

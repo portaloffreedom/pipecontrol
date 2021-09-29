@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
   QGuiApplication app(argc, argv);
   app.setApplicationName("PipeControl");
-  app.setApplicationVersion("1.0");
+  app.setApplicationVersion("0.1.2");
   app.setQuitOnLastWindowClosed(true);
   app.setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.png")));
 

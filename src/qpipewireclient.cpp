@@ -19,7 +19,10 @@ void QPipewireClient::_client_info(const struct pw_client_info *info)
 {
     const struct spa_dict_item *item;
     spa_dict_for_each(item, info->props) {
-        m_properties[item->key] = item->value;
+        const QString key = item->key;
+        const QString value = item->value;
+        m_properties[key] = value;
+        emit propertyChanged(key, value);
     }
 
     emit propertiesChanged();

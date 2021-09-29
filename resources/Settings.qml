@@ -171,6 +171,26 @@ Item {
                 { value: 5, text: qsTr("Trace")  },
             ]
         }
+
+        Text {
+            text: "Alsa Batching (USB Device) extra buffer"
+        }
+
+        Switch {
+            text: checked ? "enabled" : "disabled"
+            checked: !Pipewire.alsaProperties.batchDisabled
+            onCheckedChanged: Pipewire.alsaProperties.batchDisabled = !checked
+        }
+
+        Text {
+            text: "\"Alsa Batch\" extra buffer"
+        }
+
+        TextField {
+            text: Pipewire.alsaProperties.periodSize
+            onTextChanged: Pipewire.alsaProperties.periodSize = text
+        }
+
         Text {
             text: "Pipewire Media Session"
         }

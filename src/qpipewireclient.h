@@ -20,6 +20,7 @@ public:
 
 signals:
     void propertiesChanged();
+    void propertyChanged(QString key, QString value);
 
 private:
     QPipewire *pipewire = nullptr;
@@ -36,6 +37,11 @@ public:
     QString property(const QString &key)
     {
         return m_properties[key];
+    }
+
+    bool has_property(const QString &key)
+    {
+        return m_properties.contains(key);
     }
 
     QVariantMap properties()

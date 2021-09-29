@@ -11,6 +11,7 @@
 class QPipewireMetadata;
 class QPipewireSettings;
 class QPipewireClient;
+class AlsaProperties;
 
 #include "src/qpipewiremetadata.h"
 #include "src/qpipewiresettings.h"
@@ -18,6 +19,7 @@ class QPipewireClient;
 #include "src/qpipewireprofiler.h"
 #include "src/qpipewirenodelistmodel.h"
 #include "src/systemdservice.h"
+#include "src/alsaproperties.h"
 
 class QPipewire : public QObject
 {
@@ -29,6 +31,7 @@ class QPipewire : public QObject
     Q_PROPERTY(QList<QPipewireNode*> nodeList READ nodeList NOTIFY nodesChanged)
     Q_PROPERTY(QPipewireProfiler* profiler READ profiler NOTIFY profilerChanged)
     Q_PROPERTY(SystemdService* pipewireMediaSession READ pipewireMediaSession NOTIFY pipewireMediaSessionChanged)
+    Q_PROPERTY(AlsaProperties* alsaProperties READ alsaProperties NOTIFY alsaPropertiesChanged)
 
 signals:
     void quit();
@@ -44,6 +47,7 @@ signals:
     void nodesChanged();
     void profilerChanged();
     void pipewireMediaSessionChanged();
+    void alsaPropertiesChanged();
 
 private:
     struct pw_main_loop *loop = nullptr;
@@ -64,6 +68,7 @@ private:
     QPipewireNodeListModel *m_nodes = nullptr;
     QPipewireProfiler *pw_profiler = nullptr;
     SystemdService *pipewire_media_session = nullptr;
+    AlsaProperties *alsa_properties = nullptr;
 
 public:
     explicit QPipewire(int *argc, char **argv[], QObject *parent = nullptr);
@@ -91,6 +96,7 @@ public:
     QPipewireNodeListModel* nodes() { return m_nodes; }
     QList<QPipewireNode*> nodeList() { return m_nodes->list(); }
     SystemdService* pipewireMediaSession() { return pipewire_media_session; }
+    AlsaProperties* alsaProperties() { return alsa_properties; }
     QObjectList nodeObjectList() {
         auto list = QObjectList();
         for(int i=0; i<m_nodes->size(); i++) {
