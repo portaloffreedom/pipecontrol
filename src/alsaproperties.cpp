@@ -78,7 +78,7 @@ void AlsaProperties::readUserConf()
 
 template<typename T>
 T _parse(const QString &/*value*/) {
-    throw std::runtime_error("diocane");
+    throw std::runtime_error("Unsupported conversion");
 }
 template<>
 int _parse<int>(const QString &value) {
@@ -86,9 +86,10 @@ int _parse<int>(const QString &value) {
 }
 template<>
 bool _parse<bool>(const QString &value) {
-    if (value == "true") {
+    const QString lower_case_value = value.toLower();
+    if (lower_case_value == "true") {
         return true;
-    } else if (value == "false") {
+    } else if (lower_case_value == "false") {
         return false;
     } else {
         throw std::runtime_error((QString("Could not parse bool type from: ") + value).toStdString());
