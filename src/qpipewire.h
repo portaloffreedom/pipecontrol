@@ -32,6 +32,7 @@ class QPipewire : public QObject
     Q_PROPERTY(QPipewireProfiler* profiler READ profiler NOTIFY profilerChanged)
     Q_PROPERTY(SystemdService* pipewireMediaSession READ pipewireMediaSession NOTIFY pipewireMediaSessionChanged)
     Q_PROPERTY(AlsaProperties* alsaProperties READ alsaProperties NOTIFY alsaPropertiesChanged)
+    QML_SINGLETON
 
 signals:
     void quit();

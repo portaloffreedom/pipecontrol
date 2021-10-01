@@ -2,7 +2,6 @@
 #include "src/qpipewireclient.h"
 #include <cstdlib>
 #include <sstream>
-#include <filesystem>
 #include <iostream>
 #include <QFile>
 #include <QFileInfo>
@@ -10,9 +9,12 @@
 #include <QTextStream>
 #include <QRegularExpression>
 
-bool is_valid_file(const std::string &path) {
-    return std::filesystem::exists(path)
-            && !std::filesystem::is_directory(path);
+bool is_valid_file(const QString &path)
+{
+    QFile file(path);
+    if (!file.exists()) return false;
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    return file.isReadable();
 }
 
 AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
@@ -38,8 +40,8 @@ AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
     this->globalConf = global_conf_filename.str().c_str();
     this->userConf = user_conf_filename.str().c_str();
 
-    bool has_global = is_valid_file(globalConf.toStdString());
-    bool has_user = is_valid_file(userConf.toStdString());
+    bool has_global = is_valid_file(globalConf);
+    bool has_user = is_valid_file(userConf);
 
     if (has_user) {
         this->readUserConf();

@@ -12,6 +12,7 @@
 
 #include <QDebug>
 
+#include <csignal>
 #include <stdexcept>
 
 #define QPIPEWIRE_CAST(x) QPipewire* _this = static_cast<QPipewire*>(x);
@@ -104,8 +105,14 @@ void QPipewire::_on_core_error(u_int32_t id, int seq, int res, const char *messa
 
 static const pw_core_events core_events = {
     .version = PW_VERSION_CORE_EVENTS,
+    .info = nullptr,
     .done = on_core_done,
+    .ping = nullptr,
     .error = on_core_error,
+    .remove_id = nullptr,
+    .bound_id = nullptr,
+    .add_mem = nullptr,
+    .remove_mem = nullptr
 };
 
 //-----------------------------------------------------------------------------
