@@ -30,7 +30,6 @@ class QPipewireNode : public QObject
     Q_PROPERTY(int rate READ rate NOTIFY rateChanged)
     Q_PROPERTY(int error READ error NOTIFY errorChanged)
     Q_PROPERTY(int xrun READ xrun NOTIFY xrunChanged)
-    QML_ANONYMOUS
 
 signals:
     void idChanged();

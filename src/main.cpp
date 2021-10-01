@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
   qmlRegisterAnonymousType<QPipewireClient>("Pipewire.Client", 1);
   qmlRegisterAnonymousType<QPipewireNode>("Pipewire.Node", 1);
 #else
-  qmlRegisterSingletonType<QPipewire>("Pipewire", 1, 0, "Pipewire", [qpipewire](QQmlEngine*, QJSEngine*) {return static_cast<QObject*>(qpipewire);});
+  static QPipewire *s_qpipewire = qpipewire;
+  qmlRegisterSingletonType<QPipewire>("Pipewire", 1, 0, "Pipewire", [](QQmlEngine*, QJSEngine*) {return static_cast<QObject*>(s_qpipewire);});
 #endif
 
   QQmlApplicationEngine engine;
@@ -74,6 +75,8 @@ int main(int argc, char *argv[])
   qDebug() << "End";
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+  // when registering a type in `qmlRegisterSingletonType`, the object is deleted automatically by the qt engine
+  // otherwise we delete it ourselves
   delete qpipewire;
 #endif
   return ret;
