@@ -88,11 +88,16 @@ target_link_libraries(pipecontrol
 #  PRIVATE KF5::Kirigami2
 )
 
+configure_file(
+    ${CMAKE_SOURCE_DIR}/resources/PipeControl.desktop
+    ${CMAKE_BINARY_DIR}/PipeControl.desktop
+    )
+
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_import_qml_plugins(pipecontrol)
     qt_finalize_executable(pipecontrol)
 endif()
 
 install(TARGETS pipecontrol RUNTIME DESTINATION "bin/")
-install(FILES resources/PipeControl.desktop DESTINATION "share/applications/" )
+install(FILES ${CMAKE_BINARY_DIR}/PipeControl.desktop DESTINATION "share/applications/" )
 install(FILES resources/pipecontrol.png DESTINATION "share/icons/" )

@@ -7,6 +7,7 @@
 #include <spa/pod/parser.h>
 #include <spa/debug/pod.h>
 
+#include <pipewire/pipewire.h>
 #include <pipewire/impl.h>
 #include <pipewire/extensions/profiler.h>
 
