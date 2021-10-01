@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pipecontrol VERSION 0.1.4 LANGUAGES CXX)
+project(pipecontrol VERSION 0.1.5 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
