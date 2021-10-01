@@ -3,7 +3,6 @@
 #include "src/qpipewireclient.h"
 
 #include <spa/utils/result.h>
-#include <spa/utils/string.h>
 #include <spa/utils/defs.h>
 #include <spa/pod/parser.h>
 #include <spa/debug/pod.h>
@@ -16,6 +15,11 @@
 #include <stdexcept>
 
 #define QPIPEWIRE_CAST(x) QPipewire* _this = static_cast<QPipewire*>(x);
+
+static inline bool streq(const char *s1, const char *s2)
+{
+        return SPA_LIKELY(s1 && s2) ? strcmp(s1, s2) == 0 : s1 == s2;
+}
 
 void QPipewire::round_trip()
 {
@@ -148,7 +152,7 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
         if (metadata_name != nullptr)
         {
             if (this->pw_settings == nullptr &&
-                    spa_streq(metadata_name, "settings"))
+                    streq(metadata_name, "settings"))
             {
                 pw_settings = new QPipewireSettings(this, id, type);
                 emit settingsChanged();
@@ -157,7 +161,7 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
             }
         }
     }
-    else if (spa_streq(type, PW_TYPE_INTERFACE_Profiler))
+    else if (streq(type, PW_TYPE_INTERFACE_Profiler))
     {
         if (pw_profiler != nullptr) {
             qWarning() << "Ignoring profiler " << id << ": already attached";
@@ -166,7 +170,7 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
         pw_profiler = new QPipewireProfiler(this, id, type);
         emit profilerChanged();
     }
-    else if (spa_streq(type, PW_TYPE_INTERFACE_Node))
+    else if (streq(type, PW_TYPE_INTERFACE_Node))
     {
         QPipewireNode *node = new QPipewireNode(this, id, props);
         m_nodes->append(node);

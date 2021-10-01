@@ -7,6 +7,7 @@
 #include <QMap>
 #include <QVariantMap>
 #include <QString>
+#include <QtQml>
 
 class QPipewire;
 
@@ -17,6 +18,7 @@ public:
     Q_OBJECT
     Q_PROPERTY(QVariantMap properties READ properties NOTIFY propertiesChanged)
     Q_PROPERTY(QList<QVariantMap> propertiesList READ propertiesList NOTIFY propertiesChanged)
+    QML_ANONYMOUS
 
 signals:
     void propertiesChanged();

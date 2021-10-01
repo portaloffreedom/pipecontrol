@@ -35,6 +35,9 @@ int main(int argc, char *argv[])
     }
 
   // Allocate before the engine to ensure that it outlives it
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+  static
+#endif
   QPipewire qpipewire(&argc, &argv);
   qpipewire.round_trip();
 
@@ -44,9 +47,13 @@ int main(int argc, char *argv[])
 
   qpipewire.connect(&qpipewire, &QPipewire::quit, &app, &QGuiApplication::quit);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
   qmlRegisterSingletonInstance("Pipewire", 1, 0, "Pipewire", &qpipewire);
   qmlRegisterAnonymousType<QPipewireClient>("Pipewire.Client", 1);
   qmlRegisterAnonymousType<QPipewireNode>("Pipewire.Node", 1);
+#else
+  qmlRegisterSingletonType<QPipewire>("Pipewire", 1, 0, "Pipewire", [&qpipewire](QQmlEngine*, QJSEngine*) {return static_cast<QObject*>(&qpipewire);});
+#endif
 
   QQmlApplicationEngine engine;
   const QUrl urlMain(QStringLiteral("qrc:/resources/main.qml"));
