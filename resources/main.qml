@@ -1,11 +1,12 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.12
-import org.kde.kirigami 2.15 as Kirigami
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.11
+//import org.kde.kirigami 2.12 as Kirigami
 import Pipewire 1.0
 
 
-Kirigami.ApplicationWindow {
+//Kirigami.ApplicationWindow {
+ApplicationWindow {
     id: window
 //    height: 600
 //    width: 800
