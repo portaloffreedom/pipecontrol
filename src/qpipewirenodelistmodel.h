@@ -22,6 +22,7 @@ class QPipewireNodeListModel : public QAbstractListModel
         NameRole,
         DriverIDRole,
     };
+    const unsigned int N_ROLES = 10;
 
 private:
     QList<QPipewireNode*> m_nodes;
@@ -33,6 +34,7 @@ public:
     inline QList<QPipewireNode*> &list() { return m_nodes; }
     inline const QList<QPipewireNode*> &constList() const { return m_nodes; }
 
+    Q_INVOKABLE
     void sortList();
 
 public:
@@ -47,11 +49,15 @@ public:
 public:
     // QAbstractItemModel interface
     virtual int rowCount(const QModelIndex& index = QModelIndex()) const override;
+    //virtual int columnCount(const QModelIndex& index = QModelIndex()) const override;
     virtual QVariant data(const QModelIndex& index, int role) const override;
-    //virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     virtual bool insertRows(int row, int count, const QModelIndex& parent) override;
     virtual bool removeRows(int row, int count, const QModelIndex& parent) override;
     virtual QHash<int, QByteArray> roleNames() const override;
 
     void rowChanged(QPipewireNode* node, int role);
+
+    Q_INVOKABLE
+    void move(int oldIndex, int newIndex);
 };

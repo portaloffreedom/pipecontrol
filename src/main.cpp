@@ -6,6 +6,8 @@
 #include <QLocale>
 #include <QTimer>
 #include <QTranslator>
+#include <KLocalizedString>
+#include <KLocalizedContext>
 
 #include "src/qpipewire.h"
 #include "src/qpipewiresettings.h"
@@ -16,9 +18,15 @@ int main(int argc, char *argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
   QGuiApplication app(argc, argv);
+  KLocalizedString::setApplicationDomain("pipecontrol");
+  QCoreApplication::setOrganizationName("Dek");
+  QCoreApplication::setOrganizationDomain("matteodroids.science");
+  QCoreApplication::setApplicationName("PipeControl");
+
   app.setApplicationName("PipeControl");
   app.setApplicationVersion(PIPECONTROL_VERSION);
   app.setQuitOnLastWindowClosed(true);
@@ -53,7 +61,9 @@ int main(int argc, char *argv[])
   qmlRegisterSingletonType<QPipewire>("Pipewire", 1, 0, "Pipewire", [](QQmlEngine*, QJSEngine*) {return static_cast<QObject*>(s_qpipewire);});
 #endif
 
+
   QQmlApplicationEngine engine;
+  engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
   const QUrl urlMain(QStringLiteral("qrc:/resources/main.qml"));
   QObject::connect(&engine,
                    &QQmlApplicationEngine::objectCreated,

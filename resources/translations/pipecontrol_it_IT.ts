@@ -4,66 +4,39 @@
 <context>
     <name>Settings</name>
     <message>
-        <source>Force sample rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location filename="../Settings.qml" line="58"/>
+        <location filename="../Settings.qml" line="144"/>
         <source>Do not force</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Minimum buffer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max buffer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Force buffer size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Log Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location filename="../Settings.qml" line="176"/>
         <source>No log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../Settings.qml" line="177"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../Settings.qml" line="178"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../Settings.qml" line="179"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../Settings.qml" line="180"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../Settings.qml" line="181"/>
         <source>Trace</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>main</name>
-    <message>
-        <source>Top</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

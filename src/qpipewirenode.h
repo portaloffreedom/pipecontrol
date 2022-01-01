@@ -9,6 +9,7 @@
 //#include <spa/pod/parser.h>
 #include <spa/utils/defs.h>
 #include <spa/debug/pod.h>
+#include <spa/node/node.h>
 
 //#include <pipewire/impl.h>
 //#include <pipewire/extensions/profiler.h>
@@ -30,6 +31,7 @@ class QPipewireNode : public QObject
     Q_PROPERTY(int rate READ rate NOTIFY rateChanged)
     Q_PROPERTY(int error READ error NOTIFY errorChanged)
     Q_PROPERTY(int xrun READ xrun NOTIFY xrunChanged)
+    Q_PROPERTY(float volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
 signals:
     void idChanged();
@@ -42,12 +44,15 @@ signals:
     void rateChanged();
     void errorChanged();
     void xrunChanged();
+    void volumeChanged(float);
 
 private:
     QPipewire *pipewire = nullptr;
 
     uint32_t m_id = 0;
     QString m_name;
+    struct spa_node *m_spa_node = nullptr;
+    struct spa_node_info m_spa_node_info {};
 
     struct measurement {
             int32_t index = 0;
@@ -70,6 +75,8 @@ private:
     QPipewireNode *m_driver = nullptr;
     uint32_t errors = 0;
     int32_t last_error_status = 0;
+
+    float m_volume = 0.0;
 
 public:
     QPipewireNode() = default;
@@ -98,10 +105,13 @@ public:
     }
     int error() const { return errors; }
     int xrun() const { return info.xrun_count; }
+    float volume() const { return m_volume; }
 
     Q_INVOKABLE QString formatPercentage(float val, float quantum) const;
     Q_INVOKABLE QIcon activeIcon(bool active) const;
 
+    /// Volume has to be between 0.0 and 1.0 (included)
+    Q_INVOKABLE void setVolume(float volume);
 
 private:
 
@@ -116,6 +126,8 @@ private:
     void setDriver(QPipewireNode *newDriver);
     void setMeasurement(const struct measurement &measure);
     void setInfo(const struct driver &info);
+
+    void setProperties(struct spa_pod *properties);
 
     friend class QPipewireProfiler;
 };

@@ -1,137 +1,58 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.11
 import Pipewire 1.0
-import QtQuick.Controls 2.12
-//import org.kde.plasma.core 2.0 as PlasmaCore
-//import org.kde.kirigami 2.12 as Kirigami
+import QtQuick.Controls 2.12 as Controls
+import org.kde.kirigami 2.12 as Kirigami
 
+Kirigami.ScrollablePage {
+    title: i18nc("@title","Top")
+    property var root
+    Layout.fillWidth: true
 
-ColumnLayout {
-    width: 400
-    height: 200
-
-    RowLayout {
-        id: header
-        height: 30
-        Layout.fillWidth: true
-
-        //Label { text: index }
-//        Label {
-//            Layout.preferredWidth: PlasmaCore.Units.iconSizes.smallMedium +30
-//            text: "ACTIVE"
-//        }
-        Label {
-            Layout.leftMargin: 10
-            Layout.preferredWidth: 40
-            Layout.alignment: Qt.AlignRight
-            text: "ID"
-        }
-        Rectangle {
-            Layout.preferredWidth: 50
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                text: "RATE"
-            }
-        }
-        Rectangle {
-            Layout.preferredWidth: 70
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                text: "QUANT"
-            }
-        }
-        Rectangle {
-            Layout.preferredWidth: 70
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                text: "WAIT"
-            }
-        }
-        Rectangle {
-            Layout.preferredWidth: 70
-            Label {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                text: "BUSY"
-            }
-        }
-        Label {
-            Layout.leftMargin: 15
-            Layout.fillWidth: true
-            text: "NAME"
-        }
-    }
-
-    ListView {
-        id: topList
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        model: Pipewire.nodes
-        delegate: rowDelegate
-        clip: true
-        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-        focus: true
+    actions.main: Kirigami.Action {
+        id: addAction
+        icon.name: "settings-configure"
+        text: i18n("Settings")
+        onTriggered: root.pageStack.replace("qrc:/resources/Settings.qml", {
+            root: root
+        })
     }
 
     Component {
-        id: rowDelegate
-        Item {
-            width: topList.width
-            height: nodeRow.height
+        id: delegateComponent
+        Kirigami.SwipeListItem {
+            id: listItem
+            contentItem: RowLayout {
 
-            required property int index
-            required property int id
-            required property bool active
-            required property int rate
-            required property int quantum
-            required property double wait
-            required property double busy
-            required property string name
-            required property int driverID
-
-            //required property var display
-            //property var node: Pipewire.nodeList[index]
-
-            RowLayout {
-                id: nodeRow
-                height: 30
-                Layout.fillHeight: true
-                Layout.alignment: Qt.AlignLeft
-                Layout.margins: 10
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
-
-//                Label { text: active }
-//                Kirigami.Icon {
-//                    visible: active
-//                    Layout.leftMargin: 10
-//                    Layout.rightMargin: 10
-//                    width: PlasmaCore.Units.iconSizes.smallMedium
-//                    height: PlasmaCore.Units.iconSizes.smallMedium
-////                    source: active ? "media-playback-start" : "media-playback-pause"
-//                    source: "media-playback-start"
-//                }
-//                Kirigami.Icon {
-//                    visible: !active
-//                    Layout.leftMargin: 10
-//                    Layout.rightMargin: 10
-//                    width: PlasmaCore.Units.iconSizes.smallMedium
-//                    height: PlasmaCore.Units.iconSizes.smallMedium
-//                    source: "media-playback-pause"
-//                }
-                Label {
-                    Layout.leftMargin: 10
-                    Layout.preferredWidth: 40;
-                    Layout.alignment: Qt.AlignRight;
-                    text: id
+                Kirigami.ListItemDragHandle {
+                    visible: false //model.driverID > 0
+                    listItem: listItem
+                    listView: mainList
+                    property int oldIndex: -1;
+                    property int newIndex: -1;
+                    onMoveRequested: function(p_oldIndex, p_newIndex) {
+                        oldIndex = p_oldIndex
+                        newIndex = p_newIndex
+                    }
+                    onDropped: {
+                        console.log("element moved " + oldIndex + " -> " + newIndex + " dropped");
+                        Pipewire.nodes.move(oldIndex, newIndex);
+                        oldIndex = -1
+                        newIndex = -1
+                    }
                 }
+
+                Controls.Label {
+                    Layout.leftMargin: 10
+                    Layout.preferredWidth: 40
+                    Layout.alignment: Qt.AlignRight
+                    text: model.id
+                }
+
                 Rectangle {
                     Layout.preferredWidth: 50
                     Layout.alignment: Qt.AlignRight;
-                    Label {
+                    Controls.Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: rate
@@ -140,7 +61,7 @@ ColumnLayout {
                 Rectangle {
                     Layout.preferredWidth: 70
                     Layout.alignment: Qt.AlignRight;
-                    Label {
+                    Controls.Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: quantum
@@ -148,7 +69,7 @@ ColumnLayout {
                 }
                 Rectangle {
                     Layout.preferredWidth: 70
-                    Label {
+                    Controls.Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: Pipewire.formatTime(wait)
@@ -156,24 +77,132 @@ ColumnLayout {
                 }
                 Rectangle {
                     Layout.preferredWidth: 70
-                    Label {
+                    Controls.Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         text: Pipewire.formatTime(busy)
                     }
                 }
-                Label {
-                    Layout.fillWidth: true
+
+                RowLayout {
                     Layout.leftMargin: 15
-                    text: (driverID > 0 ? " + " : "") + name
+                    Layout.fillWidth: true
+                    Kirigami.Icon {
+                        visible: model.driverID > 0
+                        source: "aggregation"
+                    }
+
+                    Controls.Label {
+                        Layout.fillWidth: true
+                        height: Math.max(implicitHeight, Kirigami.Units.iconSizes.smallMedium)
+                        text: model.name
+                        //color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor
+                    }
+                }
+            }
+            //actions: [
+                //Kirigami.Action {
+                    //iconName: "document-decrypt"
+                    //text: "Action 1"
+                    //onTriggered: showPassiveNotification(model.text + " Action 1 clicked")
+                //},
+                //Kirigami.Action {
+                    //iconName: "mail-reply-sender"
+                    //text: "Action 2"
+                    //onTriggered: showPassiveNotification(model.text + " Action 2 clicked")
+                //}]
+        }
+    }
+
+    ListView {
+        id: mainList
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        header:  RowLayout {
+            id: header
+            height: 30
+            Layout.fillWidth: true
+
+            Controls.Label {
+                Layout.leftMargin: 20
+                Layout.preferredWidth: 40
+                Layout.alignment: Qt.AlignRight
+                text: "ID"
+            }
+            Rectangle {
+                Layout.preferredWidth: 50
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "RATE"
+                }
+            }
+            Rectangle {
+                Layout.preferredWidth: 70
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "QUANT"
+                }
+            }
+            Rectangle {
+                Layout.preferredWidth: 70
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "WAIT"
+                }
+            }
+            Rectangle {
+                Layout.preferredWidth: 70
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "BUSY"
                 }
             }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: topList.currentIndex = index
+            Controls.Label {
+                Layout.leftMargin: 15
+                Layout.fillWidth: true
+                text: "NAME"
             }
         }
 
+        model: Pipewire.nodes
+        Component.onCompleted: Pipewire.nodes.sortList()
+        property var old_model: ListModel {
+            id: listModel
+
+            Component.onCompleted: {
+                for (var i = 0; i < 200; ++i) {
+                    listModel.append({"title": "Item " + i,
+                        "actions": [{text: "Action 1", icon: "document-decrypt"},
+                                    {text: "Action 2", icon: "mail-reply-sender"}],
+                        //"sec": Math.floor(i/10)
+                    })
+                }
+            }
+        }
+        moveDisplaced: Transition {
+            YAnimator {
+                duration: Kirigami.Units.longDuration
+                easing.type: Easing.InOutQuad
+            }
+        }
+        delegate: Kirigami.DelegateRecycler {
+            id: delegate
+            width: parent ? parent.width : implicitWidth
+            sourceComponent: delegateComponent
+        }
+        //section {
+            //property: "sec"
+            //delegate: Kirigami.ListSectionHeader {
+                //text: "Section " + (parseInt(section) + 1)
+            //}
+        //}
     }
+
+
 }

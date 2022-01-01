@@ -1,73 +1,69 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
-//import org.kde.kirigami 2.12 as Kirigami
+import QtQuick.Controls 2.12 as Controls
+import QtQuick.Layouts 1.15
+import org.kde.kirigami 2.12 as Kirigami
 import Pipewire 1.0
 
 
-//Kirigami.ApplicationWindow {
-ApplicationWindow {
-    id: window
-//    height: 600
-//    width: 800
-    minimumWidth: page.implicitWidth + page.margins*2
-    minimumHeight: page.implicitHeight + page.margins*2 + tabs.height*2
+Kirigami.ApplicationWindow {
+    id: root
     visible: true
-    title: "PipeControl "
+    title: "PipeControl"
 
-    ColumnLayout {
-        anchors.fill: parent
+    globalDrawer: Kirigami.GlobalDrawer {
+        isMenu: true
+        actions: [
+            Kirigami.Action {
+                text: i18n("Top")
+                icon.name: "source-playlist"
+                onTriggered: root.pageStack.replace("qrc:/resources/Top.qml", {
+                    root: root
+                })
+            },
+            Kirigami.Action {
+                text: i18n("Settings")
+                icon.name: "settings-configure"
+                onTriggered: root.pageStack.replace("qrc:/resources/Settings.qml", {
+                    root: root
+                })
+            },
+            Kirigami.Action {
+                text: i18n("About")
+                icon.name: "help-about-symbolic"
+                onTriggered: aboutSheet.open()
+            },
+            Kirigami.Action {
+                text: i18n("Quit")
+                icon.name: "window-close"
+                shortcut: StandardKey.Quit
+                onTriggered: Qt.quit()
+            }
+        ]
+    }
 
-        TabBar {
-            id: tabs
-            width: parent.width
-            Layout.fillWidth: true
-            TabButton {
-                text: qsTr("Top")
-            }
-            TabButton {
-                text: qsTr("Settings")
-            }
-            TabButton {
-                text: qsTr("About")
-            }
+    Kirigami.OverlaySheet {
+        id: aboutSheet
+        onSheetOpenChanged: page.actions.main.checked = sheetOpen;
+        parent: applicationWindow().overlay
+        header: Kirigami.Heading {
+            text: "About PipeControl"
         }
-
-        StackLayout {
-            id: page
-            property int margins: 5
-            width: parent.width
-            height: parent.height - tabs.height
-            currentIndex: tabs.currentIndex
-            Layout.margins: margins
-
-            Top {
-                id: top
-                Layout.minimumWidth: 300
-            }
-
-            Item {
-                Layout.fillHeight: false
-                Layout.fillWidth: true
-                implicitHeight: settings.implicitHeight
-                implicitWidth: settings.implicitWidth
-                Settings {
-                    id: settings
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-            }
-
-            Label {
-                text: "Pipecontrol v" + Pipewire.appVersion +
-                      "\nWork in progress by @portaloffreedom." +
-                      "\nLicense: GPLv3" +
-                      "\n" +
-                      "\n Pipewire compiled version: " + Pipewire.pipewireCompiledVersion() +
-                      "\n Pipewire linked version: " + Pipewire.pipewireLinkedVersion() +
-                      "\n Qt compiled version: " + Pipewire.qtCompiledVersion() +
-                      "\n Qt linked version: " + Pipewire.qtLinkedVersion() +
-                      "\n Platform: " + Pipewire.platformName()
-            }
+        Controls.Label {
+            text: "Pipecontrol v" + Pipewire.appVersion +
+                    "\nWork in progress by @portaloffreedom." +
+                    "\nLicense: GPLv3" +
+                    "\n" +
+                    "\n Pipewire compiled version: " + Pipewire.pipewireCompiledVersion() +
+                    "\n Pipewire linked version: " + Pipewire.pipewireLinkedVersion() +
+                    "\n Qt compiled version: " + Pipewire.qtCompiledVersion() +
+                    "\n Qt linked version: " + Pipewire.qtLinkedVersion() +
+                    "\n Platform: " + Pipewire.platformName()
         }
+    }
+
+
+    // Initial page to be loaded on app load
+    pageStack.initialPage: Top {
+        root: root
     }
 }

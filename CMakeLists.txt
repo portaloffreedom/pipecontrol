@@ -26,7 +26,7 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 #find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools QuickControls2 DBus REQUIRED)
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools QuickControls2 DBus REQUIRED)
 find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Quick LinguistTools QuickControls2 DBus REQUIRED)
-#find_package(KF5 ${KF_MIN_VERSION} COMPONENTS Kirigami2 CoreAddons REQUIRED)
+find_package(KF5 ${KF_MIN_VERSION} COMPONENTS Kirigami2 I18n CoreAddons REQUIRED)
 
 find_package(PkgConfig)
 pkg_check_modules(libpipewire REQUIRED libpipewire-0.3)
@@ -85,7 +85,7 @@ target_include_directories(pipecontrol
 target_link_libraries(pipecontrol
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::QuickControls2 Qt${QT_VERSION_MAJOR}::DBus
   PRIVATE ${libpipewire_LIBRARIES}
-#  PRIVATE KF5::Kirigami2
+  PRIVATE KF5::Kirigami2 KF5::I18n
 )
 
 configure_file(

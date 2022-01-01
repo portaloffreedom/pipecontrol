@@ -10,107 +10,21 @@ QPipewireNodeListModel::~QPipewireNodeListModel()
 
 void QPipewireNodeListModel::sortList()
 {
-//    beginMoveRows(QModelIndex(), 0, m_nodes.size()-1, QModelIndex(), 0);
-//    emit layoutAboutToBeChanged();
-//    const QList<QPipewireNode*> old = m_nodes;
-//    m_nodes.clear();
-//    for (QPipewireNode* device : old) {
-//        if (device->driver() == nullptr) {
-//            m_nodes.append(device);
-//            for(QPipewireNode* client : old) {
-//                if (device == client->driver()) {
-//                    m_nodes.append(client);
-//                }
-//            }
-//        }
-//    }
+   emit layoutAboutToBeChanged();
+   const QList<QPipewireNode*> old = m_nodes;
+   m_nodes.clear();
+   for (QPipewireNode* device : old) {
+       if (device->driver() == nullptr) {
+           m_nodes.append(device);
+           for(QPipewireNode* client : old) {
+               if (device == client->driver()) {
+                   m_nodes.append(client);
+               }
+           }
+       }
+   }
 
-//    emit layoutChanged();
-//    emit changePersistentIndex(QModelIndex(), QModelIndex());
-//    endMoveRows();
-
-    // Find elements to move
-    std::list<std::pair<QPipewireNode*, int>> moving;
-    for (int i=0; i<m_nodes.size(); i++)
-    {
-        QPipewireNode* node = m_nodes[i];
-        if (node == nullptr) {
-            continue;
-        }
-        QPipewireNode* driver = node->driver();
-
-        if (driver == nullptr)
-        {
-            // I'm a driver, no need to be moved
-            continue;
-        }
-
-        for(int j=i-1; j >= 0; j--)
-        {
-            // Search for driver in reverse
-            QPipewireNode* parent = m_nodes[j];
-            if (parent == nullptr || parent->driver() == driver) continue; // all good, keep going up
-            if (parent == driver) {
-                // found, all good, exit
-                break;
-            } else {
-                // not found
-                moving.emplace_back(node, i);
-                break;
-            }
-        }
-    }
-
-//    const QList<QPipewireNode*> old = m_nodes;
-
-    // Resort unparented elements
-    while(!moving.empty())
-    {
-        auto [node,source_i] = moving.front();
-        QPipewireNode* driver = node->driver();
-        assert(driver != nullptr);
-        int i=0;
-        for (; i<m_nodes.size(); i++)
-        { // Find driver
-            QPipewireNode* potential_parent = m_nodes[i];
-            if (potential_parent == driver) {
-                break;
-            }
-        }
-
-        // Find new position
-        int target = i;
-        if (i >= m_nodes.size()) {
-            // Driver not found???
-            target = m_nodes.size()-1;
-        }
-
-        while(target+1 < m_nodes.size() && m_nodes[target+1]->driver() == driver) {
-            target++;
-        }
-
-        // Move element
-//        beginMoveRows(index(source_i).parent(), source_i, source_i, index(target).parent(), target);
-        emit layoutAboutToBeChanged();
-        m_nodes.move(source_i, target);
-        emit layoutChanged();
-//        emit changePersistentIndex(,,);
-//        endMoveRows();
-
-        moving.pop_front();
-        // refix all indexes in moving
-        for (auto &iter : moving) {
-            if (source_i < target) {
-                if (iter.second < source_i) continue;
-                if (iter.second > target) continue;
-                target--; // everyone shifts front
-            } else {
-                if (iter.second > source_i) continue;
-                if (iter.second < target) continue;
-                target++; // everyone shits back
-            }
-        }
-    }
+   emit layoutChanged();
 }
 
 #include <iostream>
@@ -127,9 +41,7 @@ void QPipewireNodeListModel::append(QPipewireNode* node)
     node->connect(node, &QPipewireNode::nameChanged, this, [this, node]() {this->rowChanged(node, NameRole); });
     node->connect(node, &QPipewireNode::driverChanged, this, [this, node]() {this->rowChanged(node, DriverIDRole);});
     node->connect(node, &QPipewireNode::driverChanged, this, &QPipewireNodeListModel::sortList);
-    emit layoutAboutToBeChanged();
     m_nodes.append(node);
-    emit layoutChanged();
     endInsertRows();
     sortList();
 }
@@ -148,10 +60,8 @@ bool QPipewireNodeListModel::removeOne(QPipewireNode* node)
 bool QPipewireNodeListModel::removeOne(int index)
 {
     if (index >= 0 && index < m_nodes.size()) {
-        beginRemoveRows(this->index(index), index, index);
-        emit layoutAboutToBeChanged();
+        beginRemoveRows(QModelIndex(), index, index);
         m_nodes.removeAt(index);
-        emit layoutChanged();
         endRemoveRows();
         return true;
     } else {
@@ -209,6 +119,37 @@ QVariant QPipewireNodeListModel::data(const QModelIndex &index, int _role) const
     }
 }
 
+QVariant QPipewireNodeListModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    switch (role) {
+    case IndexRole:
+        return "Index";
+    case NodeRole:
+    case Qt::DisplayRole:
+        return "Node";
+    case IDRole:
+        return QVariant("ID");
+    case ActiveRole:
+        return QVariant("Active");
+    case RateRole:
+        return QVariant("Rate");
+    case QuantumRole:
+        return QVariant("Quantum");
+    case WaitRole:
+        return QVariant("Wait");
+    case BusyRole:
+        return QVariant("Busy");
+    case NameRole:
+        return QVariant("Name");
+    case DriverIDRole:
+        return QVariant("Driver");
+    default:
+        qWarning() << "UNDEFINED ROLE" << role;
+        throw std::runtime_error("Undefined role");
+    }
+}
+
+
 bool QPipewireNodeListModel::insertRows(int position, int count, const QModelIndex& parent)
 {
     beginInsertRows(parent, position, position+count-1);
@@ -257,3 +198,23 @@ void QPipewireNodeListModel::rowChanged(QPipewireNode* node, int role)
     QModelIndex bottomRight = createIndex(index, 0);
     emit dataChanged(topLeft, bottomRight, {role});
 }
+
+void QPipewireNodeListModel::move(int from, int to)
+{
+    if (from == to) return;
+    int n=1;
+    if (from > to) {
+        // Only move forwards - flip if backwards moving
+        int tfrom = from;
+        int tto = to;
+        from = tto;
+        to = tto+n;
+        n = tfrom-tto;
+    }
+
+    beginMoveRows(QModelIndex(), from, from+n-1, QModelIndex(), to+n);
+    for (int i=n-1; i>=0; i--)
+        m_nodes.move(from+i, to);
+    endMoveRows();
+}
+
