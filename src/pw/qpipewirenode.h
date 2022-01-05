@@ -113,6 +113,7 @@ public:
     virtual ~QPipewireNode();
 
     int id() const { return m_id; }
+    uint32_t id_u32() const { return m_id; }
     QString name() const { return m_name; }
     QString category() const { return m_category; }
     QString mediaClass() const { return m_media_class; }

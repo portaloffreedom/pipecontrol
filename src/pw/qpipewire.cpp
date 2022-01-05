@@ -1,6 +1,8 @@
 #include "qpipewire.h"
 #include "src/pw/qpipewiresettings.h"
 #include "src/pw/qpipewireclient.h"
+#include "src/pw/qpipewirenode.h"
+#include "src/pw/qpipewirelink.h"
 
 #include <spa/utils/result.h>
 #include <spa/utils/defs.h>
@@ -185,27 +187,42 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
         qWarning() << "Adding node id(" << id << "): " << node->name();
         emit nodesChanged();
     }
+    else if (streq(type, PW_TYPE_INTERFACE_Link))
+    {
+        QPipewireLink *link = new QPipewireLink(this, id, props);
+        m_links.append(link);
+        qWarning() << "Adding link id(" << id << "): ";
+        emit linksChanged();
+    }
 }
 
 void QPipewire::_registry_event_remove(uint32_t id)
 {
     qWarning() << "Attempting to remove id(" << id << ")";
-    QPipewireNode *node = nullptr;
     for(int i=0; i<m_nodes->size(); i++) {
         QPipewireNode *candidate = (*m_nodes)[i];
-        if (candidate && candidate->id() == id) {
-            node = candidate;
-            break;
+        if (candidate && candidate->id_u32() == id) {
+            QPipewireNode *node = candidate;
+            // ALL interfaces that are not NODES are ignored here.
+            qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
+            m_nodes->removeAt(i);
+            emit nodesChanged();
+            node->deleteLater();
+            return;
         }
     }
-    if (node != nullptr) {
-        // ALL interfaces that are not NODES are ignored here.
-        qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
-        int index = m_nodes->list().indexOf(node);
-        m_nodes->removeOne(index);
-        emit nodesChanged();
-        node->deleteLater();
+
+    for(int i=0; i<m_links.size(); i++) {
+        QPipewireLink *candidate = m_links[i];
+        if (candidate && candidate->id_u32() == id) {
+            QPipewireLink *link = candidate;
+            m_links.removeAt(i);
+            emit linksChanged();
+            link->deleteLater();
+            return;
+        }
     }
+
 }
 
 static const pw_registry_events registry_events = {

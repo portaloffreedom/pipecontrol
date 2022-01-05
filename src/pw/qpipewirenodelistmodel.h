@@ -41,7 +41,7 @@ public:
     // Delegate methods from m_nodes
     void append(QPipewireNode *node);
     bool removeOne(QPipewireNode *node);
-    bool removeOne(int index);
+    bool removeAt(int index);
     inline int size() const { return m_nodes.size(); }
     inline QPipewireNode*& operator[](int index) { return m_nodes[index]; }
     inline QPipewireNode* const& operator[](int index) const { return m_nodes[index]; }

@@ -47,6 +47,8 @@ set(PROJECT_SOURCES
         src/pw/qpipewireclient.cpp
         src/pw/qpipewirenode.h
         src/pw/qpipewirenode.cpp
+        src/pw/qpipewirelink.h
+        src/pw/qpipewirelink.cpp
         src/pw/qpipewireprofiler.h
         src/pw/qpipewireprofiler.cpp
         src/pw/qpipewirenodelistmodel.h

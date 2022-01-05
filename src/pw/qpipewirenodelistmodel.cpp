@@ -51,13 +51,13 @@ bool QPipewireNodeListModel::removeOne(QPipewireNode* node)
     qWarning() << "Removing node" << node->name();
     int index = m_nodes.indexOf(node);
     if (index != -1) {
-        return removeOne(index);
+        return removeAt(index);
     } else {
         return false;
     }
 }
 
-bool QPipewireNodeListModel::removeOne(int index)
+bool QPipewireNodeListModel::removeAt(int index)
 {
     if (index >= 0 && index < m_nodes.size()) {
         beginRemoveRows(QModelIndex(), index, index);
