@@ -1,6 +1,6 @@
 #include "qpipewireclient.h"
 
-#include "src/qpipewire.h"
+#include "src/pw/qpipewire.h"
 
 #include <iostream>
 #include <QString>

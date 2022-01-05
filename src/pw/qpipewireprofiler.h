@@ -6,7 +6,7 @@
 #include <pipewire/extensions/profiler.h>
 
 #include <QObject>
-#include "src/qpipewirenode.h"
+#include "src/pw/qpipewirenode.h"
 
 class QPipewire;
 

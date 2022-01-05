@@ -13,11 +13,11 @@ class QPipewireSettings;
 class QPipewireClient;
 class AlsaProperties;
 
-#include "src/qpipewiremetadata.h"
-#include "src/qpipewiresettings.h"
-#include "src/qpipewirenode.h"
-#include "src/qpipewireprofiler.h"
-#include "src/qpipewirenodelistmodel.h"
+#include "src/pw/qpipewiremetadata.h"
+#include "src/pw/qpipewiresettings.h"
+#include "src/pw/qpipewirenode.h"
+#include "src/pw/qpipewireprofiler.h"
+#include "src/pw/qpipewirenodelistmodel.h"
 #include "src/systemdservice.h"
 #include "src/alsaproperties.h"
 

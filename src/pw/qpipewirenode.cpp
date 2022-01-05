@@ -1,5 +1,5 @@
 #include "qpipewirenode.h"
-#include "src/qpipewire.h"
+#include "src/pw/qpipewire.h"
 #include <QtDebug>
 #include <spa/param/props.h>
 #include <spa/param/param.h>
@@ -22,7 +22,10 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
     : QObject(parent)
     , pipewire(parent)
     , m_id(id)
+    , m_node_type(NodeTypeNone)
+    , m_media_type(MediaTypeNone)
     , m_driver(this)
+
 {
     // Find name
     const char* str;
@@ -43,6 +46,45 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
                    + ' '
                    + split[1].replace('_', ' ');
         }
+    }
+
+    // Find node type
+    if ((str = spa_dict_lookup(props, PW_KEY_MEDIA_CATEGORY)) != nullptr) {
+        m_category = str;
+    } else {
+        m_category = "";
+    }
+
+    // Find node type
+    if ((str = spa_dict_lookup(props, PW_KEY_MEDIA_CLASS)) != nullptr) {
+        m_media_class = str;
+
+        if (m_media_class.contains("Audio"))
+            m_media_type = MediaTypeAudio;
+        else if (m_media_class.contains("Video"))
+            m_media_type = MediaTypeVideo;
+        else if (m_media_class.contains("Midi"))
+            m_media_type = MediaTypeMidi;
+        else
+            m_media_type = MediaTypeNone;
+    } else {
+        m_media_class = "";
+    }
+
+    if ((!m_category.isEmpty()) && m_category.contains("Duplex")) {
+        m_node_type = NodeTypeNone;
+    } else if (!m_media_class.isEmpty()) {
+        if (m_media_class.contains("Sink")) {
+            m_node_type = NodeTypeSink;
+        } else if (m_media_class.contains("Input")) {
+            m_node_type = NodeTypeInput;
+        } else if (m_media_class.contains("Source")) {
+            m_node_type = NodeTypeSource;
+        } else if (m_media_class.contains("Output")) {
+            m_node_type = NodeTypeOutput;
+        }
+    } else {
+        m_node_type = NodeTypeNone;
     }
 
     m_spa_node = static_cast<spa_node*>(

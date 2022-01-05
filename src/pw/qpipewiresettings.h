@@ -5,7 +5,7 @@
 class QPipewireMetadata;
 class QPipewire;
 
-#include "src/qpipewiremetadata.h"
+#include "src/pw/qpipewiremetadata.h"
 
 class QPipewireSettings : public QPipewireMetadata
 {

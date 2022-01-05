@@ -1,6 +1,6 @@
 #include "qpipewire.h"
-#include "src/qpipewiresettings.h"
-#include "src/qpipewireclient.h"
+#include "src/pw/qpipewiresettings.h"
+#include "src/pw/qpipewireclient.h"
 
 #include <spa/utils/result.h>
 #include <spa/utils/defs.h>

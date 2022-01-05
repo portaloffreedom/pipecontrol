@@ -1,5 +1,5 @@
 #include "alsaproperties.h"
-#include "src/qpipewireclient.h"
+#include "src/pw/qpipewireclient.h"
 #include <cstdlib>
 #include <sstream>
 #include <iostream>

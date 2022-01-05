@@ -1,7 +1,7 @@
 #include "qpipewiremetadata.h"
 
 #include <QDebug>
-#include "src/qpipewire.h"
+#include "src/pw/qpipewire.h"
 
 #define QPIPEWIRE_CAST(x) QPipewireMetadata* _this = static_cast<QPipewireMetadata*>(x);
 

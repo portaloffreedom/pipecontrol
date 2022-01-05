@@ -1,6 +1,6 @@
 #include "qpipewireprofiler.h"
-#include "src/qpipewire.h"
-#include "src/qpipewirenode.h"
+#include "src/pw/qpipewire.h"
+#include "src/pw/qpipewirenode.h"
 
 #include <spa/pod/parser.h>
 

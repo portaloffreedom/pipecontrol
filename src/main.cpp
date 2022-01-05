@@ -9,9 +9,9 @@
 #include <KLocalizedString>
 #include <KLocalizedContext>
 
-#include "src/qpipewire.h"
-#include "src/qpipewiresettings.h"
-#include "src/qpipewireclient.h"
+#include "src/pw/qpipewire.h"
+#include "src/pw/qpipewiresettings.h"
+#include "src/pw/qpipewireclient.h"
 #include "src/systemdservice.h"
 
 int main(int argc, char *argv[])
@@ -55,11 +55,12 @@ int main(int argc, char *argv[])
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
   qmlRegisterSingletonInstance("Pipewire", 1, 0, "Pipewire", qpipewire);
   qmlRegisterAnonymousType<QPipewireClient>("Pipewire.Client", 1);
-  qmlRegisterAnonymousType<QPipewireNode>("Pipewire.Node", 1);
 #else
   static QPipewire *s_qpipewire = qpipewire;
   qmlRegisterSingletonType<QPipewire>("Pipewire", 1, 0, "Pipewire", [](QQmlEngine*, QJSEngine*) {return static_cast<QObject*>(s_qpipewire);});
 #endif
+
+  qmlRegisterUncreatableType<QPipewireNode>("Pipewire.Node", 1, 0, "Node", "Not creatable from QML");
 
 
   QQmlApplicationEngine engine;

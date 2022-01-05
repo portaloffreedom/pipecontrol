@@ -19,10 +19,31 @@ class QPipewireProfiler;
 
 class QPipewireNode : public QObject
 {
-    Q_OBJECT
-    // S   ID  QUANT   RATE    WAIT    BUSY   W/Q   B/Q  ERR  NAME
+public:
+    enum NodeType {
+        NodeTypeNone = 0,
+        NodeTypeInput,
+        NodeTypeOutput,
+        NodeTypeSink,
+        NodeTypeSource,
+    };
+
+    enum MediaType {
+        MediaTypeNone = 0,
+        MediaTypeAudio,
+        MediaTypeVideo,
+        MediaTypeMidi,
+    };
+
+Q_OBJECT
+    Q_ENUM(NodeType);
+    Q_ENUM(MediaType);
     Q_PROPERTY(int id READ id NOTIFY idChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(QString category READ category NOTIFY categoryChanged)
+    Q_PROPERTY(QString mediaClass READ mediaClass NOTIFY mediaClassChanged)
+    Q_PROPERTY(NodeType nodeType READ nodeType NOTIFY nodeTypeChanged)
+    Q_PROPERTY(MediaType mediaType READ mediaType NOTIFY mediaTypeChanged)
     Q_PROPERTY(QPipewireNode* driver READ driver NOTIFY driverChanged)
     Q_PROPERTY(bool active READ active NOTIFY activeChanged)
     Q_PROPERTY(double waiting READ waiting NOTIFY waitingChanged)
@@ -36,6 +57,10 @@ class QPipewireNode : public QObject
 signals:
     void idChanged();
     void nameChanged();
+    void categoryChanged();
+    void mediaClassChanged();
+    void nodeTypeChanged();
+    void mediaTypeChanged();
     void driverChanged();
     void activeChanged();
     void waitingChanged();
@@ -51,6 +76,10 @@ private:
 
     uint32_t m_id = 0;
     QString m_name;
+    QString m_category;
+    QString m_media_class;
+    NodeType m_node_type = NodeTypeNone;
+    MediaType m_media_type = MediaTypeNone;
     struct spa_node *m_spa_node = nullptr;
     struct spa_node_info m_spa_node_info {};
 
@@ -85,6 +114,10 @@ public:
 
     int id() const { return m_id; }
     QString name() const { return m_name; }
+    QString category() const { return m_category; }
+    QString mediaClass() const { return m_media_class; }
+    NodeType nodeType() const { return m_node_type; }
+    MediaType mediaType() const { return m_media_type; }
     QPipewireNode *driver() { return m_driver != this ? m_driver : nullptr; }
     bool active() const { return measurement.status == 3; }
     double waiting() const { return (measurement.awake - measurement.signal) / 1000000000.f; }

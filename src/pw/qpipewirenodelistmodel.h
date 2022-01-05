@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 
-#include "src/qpipewirenode.h"
+#include "src/pw/qpipewirenode.h"
 
 class QPipewireNodeListModel : public QAbstractListModel
 {

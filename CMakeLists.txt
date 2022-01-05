@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pipecontrol VERSION 0.2.0 LANGUAGES CXX)
+project(pipecontrol VERSION 0.2.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -37,20 +37,20 @@ set(TS_FILES resources/translations/pipecontrol_it_IT.ts)
 
 set(PROJECT_SOURCES
         src/main.cpp
-        src/qpipewire.h
-        src/qpipewire.cpp
-        src/qpipewiremetadata.h
-        src/qpipewiremetadata.cpp
-        src/qpipewiresettings.h
-        src/qpipewiresettings.cpp
-        src/qpipewireclient.h
-        src/qpipewireclient.cpp
-        src/qpipewirenode.h
-        src/qpipewirenode.cpp
-        src/qpipewireprofiler.h
-        src/qpipewireprofiler.cpp
-        src/qpipewirenodelistmodel.h
-        src/qpipewirenodelistmodel.cpp
+        src/pw/qpipewire.h
+        src/pw/qpipewire.cpp
+        src/pw/qpipewiremetadata.h
+        src/pw/qpipewiremetadata.cpp
+        src/pw/qpipewiresettings.h
+        src/pw/qpipewiresettings.cpp
+        src/pw/qpipewireclient.h
+        src/pw/qpipewireclient.cpp
+        src/pw/qpipewirenode.h
+        src/pw/qpipewirenode.cpp
+        src/pw/qpipewireprofiler.h
+        src/pw/qpipewireprofiler.cpp
+        src/pw/qpipewirenodelistmodel.h
+        src/pw/qpipewirenodelistmodel.cpp
         src/alsaproperties.h
         src/alsaproperties.cpp
         src/systemdservice.h

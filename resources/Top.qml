@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.11
 import Pipewire 1.0
+import Pipewire.Node 1.0
 import QtQuick.Controls 2.12 as Controls
 import org.kde.kirigami 2.12 as Kirigami
 
@@ -40,6 +41,34 @@ Kirigami.ScrollablePage {
                         oldIndex = -1
                         newIndex = -1
                     }
+                }
+
+                Kirigami.Icon {
+                    function mediaIconSource(node) {
+                        switch(node.mediaType) {
+                        case Node.MediaTypeAudio:
+                            switch(node.nodeType) {
+                                case Node.NodeTypeInput:
+                                case Node.NodeTypeSource:
+                                    return "audio-input-microphone-symbolic";
+                                case Node.NodeTypeOutput:
+                                case Node.NodeTypeSink:
+                                    return "audio-speakers-symbolic";
+                                default:
+                                    return "error";
+                            }
+                        case Node.MediaTypeVideo:
+                            return "camera-video-symbolic";
+                        case Node.MediaTypeMidi:
+                            return "music-note-16th";
+                        default:
+                        case Node.MediaTypeNone:
+                            return "error";
+                        }
+                    }
+
+                    source: mediaIconSource(model.node)
+                    fallback: "script-error"
                 }
 
                 Controls.Label {
@@ -95,7 +124,7 @@ Kirigami.ScrollablePage {
                     Controls.Label {
                         Layout.fillWidth: true
                         height: Math.max(implicitHeight, Kirigami.Units.iconSizes.smallMedium)
-                        text: model.name
+                        text: model.name //+ "|" + model.display.category + "|" + model.display.mediaClass
                         //color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor
                     }
                 }
@@ -123,6 +152,8 @@ Kirigami.ScrollablePage {
             id: header
             height: 30
             Layout.fillWidth: true
+
+            Kirigami.Icon {}
 
             Controls.Label {
                 Layout.leftMargin: 20
