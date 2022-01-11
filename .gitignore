@@ -77,3 +77,4 @@ Thumbs.db
 CMakeLists.txt.user
 /build-*-Debug/
 /cmake-build-*/
+/build/

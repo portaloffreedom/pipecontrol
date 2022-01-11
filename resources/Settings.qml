@@ -182,14 +182,15 @@ Kirigami.ScrollablePage {
                 ]
             }
 
+			// Pipewire Media Session SECTION ---------------------------------
             Kirigami.Separator {
-                visible: settingsPage.show_advanced
+                visible: Pipewire.isPipewireMediaSession() && settingsPage.show_advanced
                 Kirigami.FormData.isSection: true
-                Kirigami.FormData.label: i18n("ALSA driver settings")
+                Kirigami.FormData.label: i18n("Pipewire media session")
             }
 
             Switch {
-                visible: settingsPage.show_advanced
+                visible: Pipewire.isPipewireMediaSession() && settingsPage.show_advanced
                 Kirigami.FormData.label: i18n("Alsa Batching (USB Device) extra buffer")
                 text: checked ? "enabled" : "disabled"
                 checked: !Pipewire.alsaProperties.batchDisabled
@@ -197,17 +198,31 @@ Kirigami.ScrollablePage {
             }
 
             TextField {
-                visible: settingsPage.show_advanced
+                visible: Pipewire.isPipewireMediaSession() && settingsPage.show_advanced
                 Kirigami.FormData.label: i18n("\"Alsa Batch\" extra buffer")
                 text: Pipewire.alsaProperties.periodSize
                 onTextChanged: Pipewire.alsaProperties.periodSize = text
             }
 
             Button {
-                visible: settingsPage.show_advanced
-                Kirigami.FormData.label: i18n("Pipewire Media Session")
+                visible: Pipewire.isPipewireMediaSession() && settingsPage.show_advanced
+                Kirigami.FormData.label: i18n("Session service")
                 text: "Restart"
                 onClicked: Pipewire.pipewireMediaSession.restart()
+            }
+
+			// WirePlumber SECTION --------------------------------------------
+            Kirigami.Separator {
+                visible: Pipewire.isWireplumber() && settingsPage.show_advanced
+                Kirigami.FormData.isSection: true
+                Kirigami.FormData.label: i18n("Wireplumber")
+            }
+
+            Button {
+                visible: Pipewire.isWireplumber() && settingsPage.show_advanced
+                Kirigami.FormData.label: i18n("Session service")
+                text: "Restart"
+                onClicked: Pipewire.wirePlumberService.restart()
             }
 
             Kirigami.Separator {

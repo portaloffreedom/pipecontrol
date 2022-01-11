@@ -116,7 +116,7 @@ bool SystemdService::checkIsRunning()
     }
 
     if (!service_found) {
-        qWarning() << "Service \""<< serviceName <<"\"not found!";
+        qWarning() << "Service"<< serviceName <<"not found!";
         _setRunning(false);
     }
 

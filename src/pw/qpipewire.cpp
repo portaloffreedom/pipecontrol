@@ -150,8 +150,12 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
         // Shot only once when data has arrived
         QMetaObject::Connection *const connection = new QMetaObject::Connection;
         *connection = connect(pw_client, &QPipewireClient::propertiesChanged, [this, connection]() {
-            alsa_properties = new AlsaProperties(pw_client, this);
-            emit alsaPropertiesChanged();
+            if (this->isPipewireMediaSession()) {
+                // creating alsa properties when media-session is not installed could crash the application
+                alsa_properties = new AlsaProperties(pw_client, this);
+                emit alsaPropertiesChanged();
+            }
+            // delete so the connection is not shot twice
             delete connection;
         });
     }
@@ -283,6 +287,7 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
                              this);
 
     pipewire_media_session = new SystemdService("pipewire-media-session", true);
+    wireplumber_service = new SystemdService("wireplumber", true);
 
     // QT stuff
     connect(m_nodes, &QPipewireNodeListModel::layoutChanged, this, [this]() {

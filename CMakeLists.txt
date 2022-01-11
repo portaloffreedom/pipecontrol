@@ -49,12 +49,14 @@ set(PROJECT_SOURCES
         src/pw/qpipewirenode.cpp
         src/pw/qpipewirelink.h
         src/pw/qpipewirelink.cpp
+        src/pw/qpipewireport.h
+        src/pw/qpipewireport.cpp
         src/pw/qpipewireprofiler.h
         src/pw/qpipewireprofiler.cpp
         src/pw/qpipewirenodelistmodel.h
         src/pw/qpipewirenodelistmodel.cpp
-        src/alsaproperties.h
-        src/alsaproperties.cpp
+        src/pw/media-session/alsaproperties.h
+        src/pw/media-session/alsaproperties.cpp
         src/systemdservice.h
         src/systemdservice.cpp
         qml.qrc

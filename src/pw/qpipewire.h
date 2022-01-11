@@ -4,6 +4,7 @@
 #include <QList>
 #include <QVariantList>
 #include <QGuiApplication>
+#include <QStringLiteral>
 
 #include <pipewire/pipewire.h>
 #include <pipewire/extensions/metadata.h>
@@ -19,8 +20,8 @@ class AlsaProperties;
 #include "src/pw/qpipewirenode.h"
 #include "src/pw/qpipewireprofiler.h"
 #include "src/pw/qpipewirenodelistmodel.h"
+#include "src/pw/media-session/alsaproperties.h"
 #include "src/systemdservice.h"
-#include "src/alsaproperties.h"
 
 class QPipewire : public QObject
 {
@@ -33,6 +34,7 @@ class QPipewire : public QObject
     Q_PROPERTY(QList<QPipewireLink*> linkList READ linkList NOTIFY linksChanged)
     Q_PROPERTY(QPipewireProfiler* profiler READ profiler NOTIFY profilerChanged)
     Q_PROPERTY(SystemdService* pipewireMediaSession READ pipewireMediaSession NOTIFY pipewireMediaSessionChanged)
+    Q_PROPERTY(SystemdService* wirePlumberService READ wirePlumberService NOTIFY wirePlumberServiceChanged)
     Q_PROPERTY(AlsaProperties* alsaProperties READ alsaProperties NOTIFY alsaPropertiesChanged)
 
 signals:
@@ -50,6 +52,7 @@ signals:
     void linksChanged();
     void profilerChanged();
     void pipewireMediaSessionChanged();
+    void wirePlumberServiceChanged();
     void alsaPropertiesChanged();
 
 private:
@@ -72,6 +75,7 @@ private:
     QList<QPipewireLink*> m_links;
     QPipewireProfiler *pw_profiler = nullptr;
     SystemdService *pipewire_media_session = nullptr;
+    SystemdService *wireplumber_service = nullptr;
     AlsaProperties *alsa_properties = nullptr;
 
 public:
@@ -93,7 +97,13 @@ public:
     //Q_INVOKABLE QString kframeworksVersion() { return QStringLiteral(KXMLGUI_VERSION_STRING); }
 
     Q_INVOKABLE static QString formatTime(double val);
-
+    Q_INVOKABLE bool isPipewireMediaSession() {
+        //Wireplumber may mask itself as pipewire-media-session, maybe not but let's be double sure
+        return pipewire_media_session->running() && !wireplumber_service->running();
+    }
+    Q_INVOKABLE bool isWireplumber() {
+        return wireplumber_service->running();
+    }
     QPipewireClient* client() { return pw_client; }
     QPipewireSettings* settings() { return pw_settings; }
     QPipewireProfiler* profiler() { return pw_profiler; }
@@ -101,6 +111,7 @@ public:
     QList<QPipewireNode*> nodeList() { return m_nodes->list(); }
     QList<QPipewireLink*> linkList() { return m_links; }
     SystemdService* pipewireMediaSession() { return pipewire_media_session; }
+    SystemdService* wirePlumberService() { return wireplumber_service; }
     AlsaProperties* alsaProperties() { return alsa_properties; }
     QObjectList nodeObjectList() {
         auto list = QObjectList();
