@@ -41,17 +41,16 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationDomain("matteodroids.science");
   QCoreApplication::setApplicationName("PipeControl");
 
-  app.setApplicationName("PipeControl");
-  app.setApplicationVersion(PIPECONTROL_VERSION);
-  app.setQuitOnLastWindowClosed(true);
-  app.setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.png")));
+  QGuiApplication::setApplicationVersion(PIPECONTROL_VERSION);
+  QGuiApplication::setQuitOnLastWindowClosed(true);
+  QGuiApplication::setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.png")));
 
   QTranslator translator;
   const QStringList uiLanguages = QLocale::system().uiLanguages();
   for (const QString &locale : uiLanguages) {
       const QString baseName = "pipecontrol_" + QLocale(locale).name();
       if (translator.load(":/i18n/" + baseName)) {
-          app.installTranslator(&translator);
+          QGuiApplication::installTranslator(&translator);
           break;
         }
     }
@@ -61,10 +60,10 @@ int main(int argc, char *argv[])
   qpipewire->round_trip();
 
   QTimer timer;
-  timer.connect(&timer, &QTimer::timeout, qpipewire, &QPipewire::round_trip);
+  QObject::connect(&timer, &QTimer::timeout, qpipewire, &QPipewire::round_trip);
   timer.start(100);
 
-  qpipewire->connect(qpipewire, &QPipewire::quit, &app, &QGuiApplication::quit);
+  QObject::connect(qpipewire, &QPipewire::quit, &app, &QGuiApplication::quit);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
   qmlRegisterSingletonInstance("Pipewire", 1, 0, "Pipewire", qpipewire);
@@ -96,7 +95,7 @@ int main(int argc, char *argv[])
   }
 
   qDebug() << "Start";
-  int ret = app.exec();
+  int ret = QGuiApplication::exec();
   qDebug() << "End";
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
