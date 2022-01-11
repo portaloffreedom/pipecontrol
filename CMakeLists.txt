@@ -78,7 +78,8 @@ endif()
 
 target_compile_definitions(pipecontrol
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
-  PRIVATE -DPIPECONTROL_VERSION="${CMAKE_PROJECT_VERSION}")
+  PRIVATE -DPIPECONTROL_VERSION="${CMAKE_PROJECT_VERSION}"
+  PRIVATE -DKF5_COMPILED_VERSION="${KF5_VERSION}")
 target_compile_options(pipecontrol
   PRIVATE ${libpipewire_CFLAGS_OTHER})
 target_compile_definitions(pipecontrol PRIVATE

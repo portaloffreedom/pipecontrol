@@ -57,6 +57,7 @@ Kirigami.ApplicationWindow {
                     "\n Pipewire linked version: " + Pipewire.pipewireLinkedVersion() +
                     "\n Qt compiled version: " + Pipewire.qtCompiledVersion() +
                     "\n Qt linked version: " + Pipewire.qtLinkedVersion() +
+                    "\n KF5 compiled version: " + Pipewire.kframeworksCompiledVersion() +
                     "\n Platform: " + Pipewire.platformName()
         }
     }

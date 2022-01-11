@@ -94,7 +94,7 @@ public:
     Q_INVOKABLE QString platformName() { return QGuiApplication::platformName(); }
     Q_INVOKABLE QString qtCompiledVersion() { return QStringLiteral(QT_VERSION_STR); }
     Q_INVOKABLE QString qtLinkedVersion() { return QString::fromLocal8Bit(qVersion()); }
-    //Q_INVOKABLE QString kframeworksVersion() { return QStringLiteral(KXMLGUI_VERSION_STRING); }
+    Q_INVOKABLE QString kframeworksCompiledVersion() { return QStringLiteral(KF5_COMPILED_VERSION); }
 
     Q_INVOKABLE static QString formatTime(double val);
     Q_INVOKABLE bool isPipewireMediaSession() {
