@@ -43,6 +43,9 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
     , m_driver(this)
 
 {
+    m_node_name = spa_dict_lookup(props, PW_KEY_NODE_NAME);
+    m_node_description = spa_dict_lookup(props, PW_KEY_NODE_DESCRIPTION);
+
     // Find name
     const char* str;
     if ((str = spa_dict_lookup(props, PW_KEY_NODE_NAME)) == nullptr &&
@@ -55,13 +58,6 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
         m_name = QString(id);
     } else {
         m_name = str;
-        if (m_name.startsWith("alsa_")) {
-            QStringList split = m_name.split('.');
-
-            m_name = split[0].replace('_', ' ').toCaseFolded()
-                   + ' '
-                   + split[1].replace('_', ' ');
-        }
     }
 
     // Find node type

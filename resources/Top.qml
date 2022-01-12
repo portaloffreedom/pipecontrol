@@ -122,24 +122,41 @@ Kirigami.ScrollablePage {
                     }
 
                     Controls.Label {
+                        Controls.ToolTip.visible: model.node.isAlsa() && hovered
+                        Controls.ToolTip.text: model.node.nodeName
                         Layout.fillWidth: true
                         height: Math.max(implicitHeight, Kirigami.Units.iconSizes.smallMedium)
                         text: model.name //+ "|" + model.display.category + "|" + model.display.mediaClass
                         //color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor
                     }
                 }
+
+                Kirigami.OverlaySheet {
+                    id: infoAlsaNodeSheet
+                    header: Kirigami.Heading {
+                        text: model.name
+                    }
+                    Kirigami.FormLayout {
+                        Controls.Label {
+                            id: nameField
+                            Kirigami.FormData.label: i18nc("@label:textbox", "Node Name:")
+                            text: model.node.nodeName
+                            enabled: false
+                        }
+                    }
+                }
             }
-            //actions: [
-                //Kirigami.Action {
-                    //iconName: "document-decrypt"
-                    //text: "Action 1"
-                    //onTriggered: showPassiveNotification(model.text + " Action 1 clicked")
-                //},
-                //Kirigami.Action {
-                    //iconName: "mail-reply-sender"
-                    //text: "Action 2"
-                    //onTriggered: showPassiveNotification(model.text + " Action 2 clicked")
-                //}]
+            actions: [
+                Kirigami.Action {
+                    visible: model.node.isAlsa()
+                    iconName: "documentinfo"
+                    text: i18nc("@audiostream","info")
+                    onTriggered: {
+                        infoAlsaNodeSheet.open()
+                        showPassiveNotification(model.node.nodeName)
+                    }
+                }
+            ]
         }
     }
 
@@ -147,6 +164,7 @@ Kirigami.ScrollablePage {
         id: mainList
         Layout.fillWidth: true
         Layout.fillHeight: true
+        currentIndex: -1
 
         header:  RowLayout {
             id: header

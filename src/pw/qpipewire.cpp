@@ -19,6 +19,7 @@
 #include "src/pw/qpipewireclient.h"
 #include "src/pw/qpipewirenode.h"
 #include "src/pw/qpipewirelink.h"
+#include "src/pw/qpipewirealsanode.h"
 
 #include <spa/utils/result.h>
 #include <spa/utils/defs.h>
@@ -38,7 +39,7 @@
 
 static inline bool streq(const char *s1, const char *s2)
 {
-        return SPA_LIKELY(s1 && s2) ? strcmp(s1, s2) == 0 : s1 == s2;
+    return SPA_LIKELY(s1 && s2) ? strcmp(s1, s2) == 0 : s1 == s2;
 }
 
 void QPipewire::round_trip()
@@ -202,7 +203,13 @@ void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *t
     }
     else if (streq(type, PW_TYPE_INTERFACE_Node))
     {
-        QPipewireNode *node = new QPipewireNode(this, id, props);
+        QPipewireNode *node;
+        const QString str = spa_dict_lookup(props, PW_KEY_NODE_NAME);
+        if (str.startsWith("alsa_input.") || str.startsWith("alsa_output.")) {
+            node = new QPipewireAlsaNode(this, id, props);
+        } else {
+            node = new QPipewireNode(this, id, props);
+        }
         m_nodes->append(node);
         qWarning() << "Adding node id(" << id << "): " << node->name();
         emit nodesChanged();

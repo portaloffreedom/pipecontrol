@@ -20,15 +20,9 @@
 #include <QIcon>
 #include <QtQml>
 
-//#include <spa/utils/result.h>
-//#include <spa/utils/string.h>
-//#include <spa/pod/parser.h>
 #include <spa/utils/defs.h>
 #include <spa/debug/pod.h>
 #include <spa/node/node.h>
-
-//#include <pipewire/impl.h>
-//#include <pipewire/extensions/profiler.h>
 
 class QPipewire;
 class QPipewireProfiler;
@@ -56,6 +50,8 @@ Q_OBJECT
     Q_ENUM(MediaType);
     Q_PROPERTY(int id READ id NOTIFY idChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(QString nodeName READ nodeName NOTIFY nodeNameChanged)
+    Q_PROPERTY(QString nodeDescription READ nodeDescription NOTIFY nodeDescriptionChanged)
     Q_PROPERTY(QString category READ category NOTIFY categoryChanged)
     Q_PROPERTY(QString mediaClass READ mediaClass NOTIFY mediaClassChanged)
     Q_PROPERTY(NodeType nodeType READ nodeType NOTIFY nodeTypeChanged)
@@ -73,6 +69,8 @@ Q_OBJECT
 signals:
     void idChanged();
     void nameChanged();
+    void nodeNameChanged();
+    void nodeDescriptionChanged();
     void categoryChanged();
     void mediaClassChanged();
     void nodeTypeChanged();
@@ -87,11 +85,13 @@ signals:
     void xrunChanged();
     void volumeChanged(float);
 
-private:
+protected:
     QPipewire *pipewire = nullptr;
 
     uint32_t m_id = 0;
     QString m_name;
+    QString m_node_name;
+    QString m_node_description;
     QString m_category;
     QString m_media_class;
     NodeType m_node_type = NodeTypeNone;
@@ -131,6 +131,8 @@ public:
     int id() const { return m_id; }
     uint32_t id_u32() const { return m_id; }
     QString name() const { return m_name; }
+    QString nodeName() const { return m_node_name; }
+    QString nodeDescription() const { return m_node_description; }
     QString category() const { return m_category; }
     QString mediaClass() const { return m_media_class; }
     NodeType nodeType() const { return m_node_type; }
@@ -160,10 +162,12 @@ public:
     Q_INVOKABLE QString formatPercentage(float val, float quantum) const;
     Q_INVOKABLE QIcon activeIcon(bool active) const;
 
+    Q_INVOKABLE virtual bool isAlsa() const { return false; }
+
     /// Volume has to be between 0.0 and 1.0 (included)
     Q_INVOKABLE void setVolume(float volume);
 
-private:
+protected:
 
     float _quantum()
     {
