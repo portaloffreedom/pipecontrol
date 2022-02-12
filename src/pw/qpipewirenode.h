@@ -98,6 +98,7 @@ protected:
     MediaType m_media_type = MediaTypeNone;
     struct spa_node *m_spa_node = nullptr;
     struct spa_node_info m_spa_node_info {};
+    QHash<QString, QString> m_properties;
 
     struct measurement {
             int32_t index = 0;
@@ -181,6 +182,8 @@ protected:
     void setMeasurement(const struct measurement &measure);
     void setInfo(const struct driver &info);
 
+    Q_INVOKABLE QVariant property(const char* key);
+    Q_INVOKABLE void setProperty(const char* key, QVariant value);
     void setProperties(struct spa_pod *properties);
 
     friend class QPipewireProfiler;

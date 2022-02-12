@@ -137,11 +137,11 @@ static const pw_core_events core_events = {
 
 //-----------------------------------------------------------------------------
 static void registry_event(void *data,
-                                  uint32_t id,
-                                  uint32_t permissions,
-                                  const char *type,
-                                  uint32_t version,
-                                  const struct spa_dict *props)
+                           uint32_t id,
+                           uint32_t permissions,
+                           const char *type,
+                           uint32_t version,
+                           const struct spa_dict *props)
 {
     QPIPEWIRE_CAST(data);
     _this->_registry_event(id, permissions, type, version, props);
@@ -153,7 +153,11 @@ static void registry_event_remove(void *data, uint32_t id)
     _this->_registry_event_remove(id);
 }
 
-void QPipewire::_registry_event(uint32_t id, uint32_t permissions, const char *type, uint32_t version, const struct spa_dict *props)
+void QPipewire::_registry_event(uint32_t id,
+                                uint32_t permissions,
+                                const char *type,
+                                uint32_t version,
+                                const struct spa_dict *props)
 {
     qDebug() << "object: id(" << id << ") type(" << type << '/' << version << ')';
 
@@ -287,7 +291,7 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
     // Need this line or the profiler will not load.
     pw_context_load_module(context, PW_EXTENSION_MODULE_PROFILER, nullptr, nullptr);
 
-    //TODO remote should be?
+    //TODO remote should be? (empty string seems to work correctly)
     const char *remote = "";
     core = pw_context_connect(context,
                               pw_properties_new(PW_KEY_REMOTE_NAME, remote, nullptr),

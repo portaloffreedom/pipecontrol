@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   QObject::connect(&engine,
                    &QQmlApplicationEngine::objectCreated,
                    &app,
-                   [urlMain](QObject *obj, const QUrl &objUrl) {
+                   [urlMain](const QObject *obj, const QUrl &objUrl) {
                       if (!obj && urlMain == objUrl)
                         QCoreApplication::exit(-1);
                    },

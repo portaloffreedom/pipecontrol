@@ -134,13 +134,19 @@ Kirigami.ScrollablePage {
                 Kirigami.OverlaySheet {
                     id: infoAlsaNodeSheet
                     header: Kirigami.Heading {
-                        text: model.name
+                        text: model.node.nodeDescription
                     }
                     Kirigami.FormLayout {
                         Controls.Label {
                             id: nameField
                             Kirigami.FormData.label: i18nc("@label:textbox", "Node Name:")
                             text: model.node.nodeName
+                            enabled: false
+                        }
+                        Controls.Label {
+                            id: classField
+                            Kirigami.FormData.label: i18nc("@label:textbox", "Media Class:")
+                            text: model.node.mediaClass
                             enabled: false
                         }
                     }
@@ -153,7 +159,6 @@ Kirigami.ScrollablePage {
                     text: i18nc("@audiostream","info")
                     onTriggered: {
                         infoAlsaNodeSheet.open()
-                        showPassiveNotification(model.node.nodeName)
                     }
                 }
             ]

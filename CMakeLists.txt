@@ -59,6 +59,8 @@ set(PROJECT_SOURCES
         src/pw/qpipewirenodelistmodel.cpp
         src/pw/media-session/alsaproperties.h
         src/pw/media-session/alsaproperties.cpp
+        src/pw/utils.h
+        src/pw/utils.cpp
         src/systemdservice.h
         src/systemdservice.cpp
         qml.qrc

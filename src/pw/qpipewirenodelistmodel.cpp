@@ -27,7 +27,10 @@ QPipewireNodeListModel::~QPipewireNodeListModel()
 void QPipewireNodeListModel::sortList()
 {
    emit layoutAboutToBeChanged();
-   const QList<QPipewireNode*> old = m_nodes;
+   QList<QPipewireNode*> old = m_nodes;
+//   std::sort(old.begin(), old.end(), [](QPipewireNode*a, QPipewireNode*b) {
+//       return a->nodeName() > b->nodeName();
+//   });
    m_nodes.clear();
    for (QPipewireNode* device : old) {
        if (device->driver() == nullptr) {

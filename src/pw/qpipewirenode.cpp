@@ -16,6 +16,7 @@
  */
 #include "qpipewirenode.h"
 #include "src/pw/qpipewire.h"
+#include "src/pw/utils.h"
 #include <QtDebug>
 #include <spa/param/props.h>
 #include <spa/param/param.h>
@@ -23,6 +24,7 @@
 #include <spa/pod/builder.h>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 template <typename T>
 T clamp(const T v, const T low, const T high)
@@ -48,8 +50,9 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
 
     // Find name
     const char* str;
-    if ((str = spa_dict_lookup(props, PW_KEY_NODE_NAME)) == nullptr &&
-        (str = spa_dict_lookup(props, PW_KEY_NODE_DESCRIPTION)) == nullptr)
+    if ((str = spa_dict_lookup(props, PW_KEY_NODE_NICK)) == nullptr &&
+        (str = spa_dict_lookup(props, PW_KEY_NODE_DESCRIPTION)) == nullptr &&
+        (str = spa_dict_lookup(props, PW_KEY_NODE_NAME)) == nullptr)
     {
         str = spa_dict_lookup(props, PW_KEY_APP_NAME);
     }
@@ -102,10 +105,17 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
     m_spa_node = static_cast<spa_node*>(
         pw_registry_bind(pipewire->registry, m_id, PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, 0));
 
+    const struct spa_dict_item *item;
+    spa_dict_for_each(item, props) {
+        qDebug() << "Property[" << item->key << "] =" << item->value;
+        std::cout << "Property[" << item->key << "]=" << item->value << std::endl;
+        m_properties[item->key] = item->value;
+    }
+
+    //TODO volume property
 //    struct spa_pod_object *obj = (struct spa_pod_object *) m_spa_node;
 //    struct spa_pod_prop *prop;
 //    SPA_POD_OBJECT_FOREACH(obj, prop) {
-//        qDebug() << "KEY: " << prop->key;
 //        switch (prop->key) {
 //        case SPA_PROP_volume:
 //            float volume;
@@ -117,6 +127,8 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
 //            emit volumeChanged(m_volume);
 //            break;
 //        }
+//        const spa_pod *pod = &prop->value;
+//        std::cout << "KEY: " << prop->key << "=" << prop->value << std::endl;
 //    }
 }
 
@@ -172,6 +184,16 @@ void QPipewireNode::setInfo(const struct QPipewireNode::driver &info)
         emit rateChanged();
     if (old.xrun_count != info.xrun_count)
         emit xrunChanged();
+}
+
+QVariant QPipewireNode::property(const char *key)
+{
+    return m_properties[key];
+}
+
+void QPipewireNode::setProperty(const char *key, QVariant value)
+{
+    throw std::runtime_error("not implemented");
 }
 
 void QPipewireNode::setProperties(struct spa_pod *properties)
