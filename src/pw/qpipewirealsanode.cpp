@@ -15,6 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <pipewire/keys.h>
+#include <spa/utils/dict.h>
 #include "qpipewirealsanode.h"
 
 QPipewireAlsaNode::QPipewireAlsaNode(QPipewire *parent, uint32_t id, const struct spa_dict *props)

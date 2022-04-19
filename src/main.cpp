@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
   QGuiApplication::setApplicationVersion(PIPECONTROL_VERSION);
   QGuiApplication::setQuitOnLastWindowClosed(true);
-  QGuiApplication::setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.png")));
+  QGuiApplication::setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.svg")));
 
   QTranslator translator;
   const QStringList uiLanguages = QLocale::system().uiLanguages();

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="SVGRoot" width="16px" height="16px" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <rect width="16" height="16" color="#000000" color-rendering="auto" fill="#173f4f" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+  <g transform="matrix(.026634 0 0 .026634 -16.869 122.38)" fill="#fff">
+   <g transform="matrix(.981 0 0 .981 -104.97 -1367.8)" stroke="#000" stroke-width="7.6934">
+    <path d="m1175-3234.3s-81.07 117.57-222.93 283.64c-141.86 166.08 48.74 218.45 118.29 91.564 69.546-126.88 211.5-297.49 211.5-297.49" fill="#fff" stroke="#000" stroke-width="7.6934"/>
+   </g>
+   <path transform="rotate(36.044)" d="m-1590.8-3974.2a179.95 179.95 0 0 1-133.06 216.92 179.95 179.95 0 0 1-216.93-133.04 179.95 179.95 0 0 1 133.03-216.94 179.95 179.95 0 0 1 216.94 133.02" stroke="#000" stroke-linecap="round" stroke-width="7.5472"/>
+   <path transform="rotate(36.044)" d="m-1679.8-3952.9a88.472 88.472 0 0 1-65.417 106.65 88.472 88.472 0 0 1-106.65-65.411 88.472 88.472 0 0 1 65.404-106.66 88.472 88.472 0 0 1 106.66 65.398" stroke="#6da741" stroke-linecap="round" stroke-width="25.264"/>
+  </g>
+  <path d="m11.035 1.4425 2.7919 2.0307" fill="none" stroke="#000" stroke-width=".20101"/>
+ </g>
+</svg>
