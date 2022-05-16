@@ -44,6 +44,15 @@ Kirigami.ScrollablePage {
                 }
 
                 Kirigami.Icon {
+                    id: nodeIcon
+                    Controls.ToolTip.visible: hovered
+                    Controls.ToolTip.text: textSource(model.node)
+
+
+                    source: mediaIconSource(model.node)
+                    fallback: "script-error"
+
+
                     function mediaIconSource(node) {
                         switch(node.mediaType) {
                         case Node.MediaTypeAudio:
@@ -67,8 +76,42 @@ Kirigami.ScrollablePage {
                         }
                     }
 
-                    source: mediaIconSource(model.node)
-                    fallback: "script-error"
+                    function textSource(node) {
+                        switch(node.mediaType) {
+                        case Node.MediaTypeAudio:
+                            switch(node.nodeType) {
+                                case Node.NodeTypeInput:
+                                    return i18nc("node_type", "Audio Input");
+                                case Node.NodeTypeSource:
+                                    return i18nc("node_type", "Audio Source");
+                                case Node.NodeTypeOutput:
+                                    return i18nc("node_type", "Audio Output");
+                                case Node.NodeTypeSink:
+                                    return i18nc("node_type", "Audio Sink");
+                                default:
+                                    return i18nc("node_type", "Error");
+                            }
+                        case Node.MediaTypeVideo:
+                            switch(node.nodeType) {
+                                case Node.NodeTypeInput:
+                                    return i18nc("node_type", "Video Input");
+                                case Node.NodeTypeSource:
+                                    return i18nc("node_type", "Video Source");
+                                case Node.NodeTypeOutput:
+                                    return i18nc("node_type", "Video Output");
+                                case Node.NodeTypeSink:
+                                    return i18nc("node_type", "Video Sink");
+                                default:
+                                    return i18nc("node_type", "Error");
+                            }
+                        case Node.MediaTypeMidi:
+                            return i18nc("node_type", "Midi");
+                        case Node.MediaTypeNone:
+                            return i18nc("node_type", "None");
+                        default:
+                            return i18nc("node_type", "Error");
+                        }
+                    }
                 }
 
                 Controls.Label {
@@ -121,25 +164,42 @@ Kirigami.ScrollablePage {
                         source: "aggregation"
                     }
 
-                    Controls.Label {
-                        Controls.ToolTip.visible: model.node.isAlsa() && hovered
-                        Controls.ToolTip.text: model.node.nodeName
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        height: Math.max(implicitHeight, Kirigami.Units.iconSizes.smallMedium)
-                        text: model.name //+ "|" + model.display.category + "|" + model.display.mediaClass
-                        //color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor
+                        Layout.fillHeight: true
+                        Controls.Label {
+                            //Controls.ToolTip.visible: model.node.isAlsa() && hovered
+                            //Controls.ToolTip.text: model.node.nodeDescription
+                            Layout.fillWidth: true
+                            height: Math.max(implicitHeight, Kirigami.Units.iconSizes.smallMedium)
+                            text: model.name //+ "|" + model.display.category + "|" + model.display.mediaClass
+                            //color: listItem.checked || (listItem.pressed && !listItem.checked && !listItem.sectionDelegate) ? listItem.activeTextColor : listItem.textColor
+                        }
+                        Controls.Label {
+                            visible: model.node.nodeDescription && model.name != model.node.nodeDescription
+                            Layout.fillWidth: true
+                            height: Math.max(implicitHeight, Kirigami.Units.iconSizes.smallMedium)
+                            text: model.node.nodeDescription
+                            color: Kirigami.Theme.disabledTextColor
+                        }
                     }
                 }
 
                 Kirigami.OverlaySheet {
                     id: infoAlsaNodeSheet
                     header: Kirigami.Heading {
-                        text: model.node.nodeDescription
+                        text: model.name
                     }
                     Kirigami.FormLayout {
                         Controls.Label {
                             id: nameField
-                            Kirigami.FormData.label: i18nc("@label:textbox", "Node Name:")
+                            Kirigami.FormData.label: i18nc("@label:textbox", "Node Description:")
+                            text: model.node.nodeDescription
+                            enabled: false
+                        }
+                        Controls.Label {
+                            id: descriptionField
+                            Kirigami.FormData.label: i18nc("@label:textbox", "Node name:")
                             text: model.node.nodeName
                             enabled: false
                         }
