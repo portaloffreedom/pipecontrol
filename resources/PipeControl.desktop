@@ -3,4 +3,4 @@ Name=PipeControl
 Exec=${CMAKE_INSTALL_PREFIX}/bin/pipecontrol %u
 Type=Application
 Terminal=false
-Icon=${CMAKE_INSTALL_PREFIX}/share/icons/pipecontrol.svg
+Icon=pipecontrol
