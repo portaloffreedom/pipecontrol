@@ -43,7 +43,9 @@ int main(int argc, char *argv[])
 
   QGuiApplication::setApplicationVersion(PIPECONTROL_VERSION);
   QGuiApplication::setQuitOnLastWindowClosed(true);
-  QGuiApplication::setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/pipecontrol.svg")));
+  QGuiApplication::setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/hicolor/scalable/apps/pipecontrol.svg")));
+  // This is necessary for the Application Icon on wayland (xdg-shell standard)
+  QGuiApplication::setDesktopFileName("PipeControl.desktop");
 
   QTranslator translator;
   const QStringList uiLanguages = QLocale::system().uiLanguages();
