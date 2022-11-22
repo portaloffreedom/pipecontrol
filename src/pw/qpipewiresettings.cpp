@@ -22,11 +22,14 @@
 #define MAX_BUFFER_KEY "clock.max-quantum"
 #define FORCE_SAMPLERATE_KEY "clock.force-rate"
 #define FORCE_BUFFER_KEY "clock.force-quantum"
+#define RATE_KEY "clock.rate"
+#define ALLOWED_RATES_KEY "clock.allowed-rates"
+#define QUANTUM_KEY "clock.quantum"
 
 //-----------------------------------------------------------------------------
 
-QPipewireSettings::QPipewireSettings(QPipewire *parent, uint32_t id, const char *type)
-    :QPipewireMetadata(parent, id, type)
+QPipewireSettings::QPipewireSettings(QPipewire *parent, uint32_t id, const spa_dict* props)
+    :QPipewireMetadata(parent, id, props)
 {
     connect(this, &QPipewireMetadata::onKeyUpdated, this, &QPipewireSettings::keyUpdated);
 }
@@ -50,8 +53,14 @@ void QPipewireSettings::keyUpdated(uint32_t id, const char *key, const char *typ
     } else if (strcmp(key, MAX_BUFFER_KEY)==0) {
         m_maxBuffer = std::stoi(value);
         emit maxBufferChanged(m_maxBuffer);
+    // } else if (strcmp(key, RATE_KEY)==0) {
+    //     //TODO
+    // } else if (strcmp(key, ALLOWED_RATES_KEY)==0) {
+    //     //TODO
+    // } else if (strcmp(key, QUANTUM_KEY)==0) {
+    //     //TODO
     } else {
-        qWarning() << "Unrecognized option \"" << key << "\" with value \"" << value << '"';
+        qWarning() << "Unrecognized pipewire setting \"" << key << "\" with value \"" << value << '"';
     }
 }
 

@@ -43,7 +43,7 @@ private:
     };
 
 public:
-    explicit QPipewireProfiler(QPipewire *parent, uint32_t id, const char *type);
+    explicit QPipewireProfiler(QPipewire *parent, uint32_t id, const spa_dict* props);
     virtual ~QPipewireProfiler();
 
     int process_info(const struct spa_pod *pod, struct QPipewireNode::driver *info);

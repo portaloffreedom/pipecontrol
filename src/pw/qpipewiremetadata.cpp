@@ -55,12 +55,12 @@ static const pw_metadata_events metadata_events {
 
 //-----------------------------------------------------------------------------
 
-QPipewireMetadata::QPipewireMetadata(QPipewire *parent, uint32_t id, const char *type)
+QPipewireMetadata::QPipewireMetadata(QPipewire *parent, uint32_t id, const spa_dict* props)
     : QObject(parent)
     , pipewire(parent)
 {
     metadata = static_cast<pw_metadata*>(
-                   pw_registry_bind(parent->registry, id, type, PW_VERSION_METADATA, 0));
+                   pw_registry_bind(parent->registry, id, PW_TYPE_INTERFACE_Metadata, PW_VERSION_METADATA, 0));
     pw_metadata_add_listener(metadata,
                              &metadata_listener,
                              &metadata_events,

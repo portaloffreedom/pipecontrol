@@ -36,6 +36,151 @@ T clamp(const T v, const T low, const T high)
     return v;
 }
 
+#define QPIPEWIRE_CAST(x) QPipewireNode* _this = static_cast<QPipewireNode*>(x);
+
+void node_event_info(void *data, const pw_node_info *info)
+{
+    QPIPEWIRE_CAST(data);
+    _this->_node_event_info(info);
+}
+
+void QPipewireNode::_node_event_info(const pw_node_info* info)
+{
+    // message when it's updated
+    // qDebug() << "node_event_info: ";
+    const struct spa_dict_item *item;
+
+    if (info->change_mask == PW_NODE_CHANGE_MASK_ALL) {
+        //TODO
+        // qDebug() << "CHANGE ALL";
+    }
+    if (info->change_mask & PW_NODE_CHANGE_MASK_INPUT_PORTS ) {
+        //TODO
+        // qDebug() << "CHANGE INPUT PORTS";
+    }
+    if (info->change_mask & PW_NODE_CHANGE_MASK_OUTPUT_PORTS) {
+        //TODO
+        // qDebug() << "CHANGE OUTPUT PORTS";
+    }
+    if (info->change_mask & PW_NODE_CHANGE_MASK_STATE) {
+        m_state = info->state;
+        emit stateChanged();
+        // qDebug() << "CHANGE STATE";
+    }
+    if (info->change_mask & PW_NODE_CHANGE_MASK_PROPS) {
+        spa_dict_for_each(item, info->props) {
+            //volume is not here....
+            const QString key = item->key;
+            const QString value = item->value;
+            m_properties[key] = value;
+            //qWarning() << "node_" << this->m_name << ":[" << key << "]=" << value;
+            //emit propertyChanged(key, value);
+        }
+        // qDebug() << "CHANGE PROPS";
+    }
+    if (info->change_mask & PW_NODE_CHANGE_MASK_PARAMS) {
+        enumParams();
+        // qDebug() << "CHANGE PARAMS";
+    }
+
+    // spa_dict_for_each(item, info->props) {
+    //     //volume is not here....
+    //     const QString key = item->key;
+    //     const QString value = item->value;
+    //     // m_properties[key] = value;
+    //     qWarning() << "node_" << this->m_name << ":[" << key << "]=" << value;
+    //     //emit propertyChanged(key, value);
+    // }
+
+    // for(uint32_t i=0; i<info->n_params; i++) {
+    //     spa_param_info *param = info->params+i;
+    //     QString id;
+    //     switch ((spa_param_type) param->id) {
+    //         case SPA_PARAM_Invalid: id = "SPA_PARAM_Invalid"; break;		/**< invalid */
+    //         case SPA_PARAM_PropInfo: id = "SPA_PARAM_PropInfo"; break;		/**< property information as SPA_TYPE_OBJECT_PropInfo */
+    //         case SPA_PARAM_Props: id = "SPA_PARAM_Props"; break;		/**< properties as SPA_TYPE_OBJECT_Props */
+    //         case SPA_PARAM_EnumFormat: id = "SPA_PARAM_EnumFormat"; break;		/**< available formats as SPA_TYPE_OBJECT_Format */
+    //         case SPA_PARAM_Format: id = "SPA_PARAM_Format"; break;		/**< configured format as SPA_TYPE_OBJECT_Format */
+    //         case SPA_PARAM_Buffers: id = "SPA_PARAM_Buffers"; break;		/**< buffer configurations as SPA_TYPE_OBJECT_ParamBuffers*/
+    //         case SPA_PARAM_Meta: id = "SPA_PARAM_Meta"; break;			/**< allowed metadata for buffers as SPA_TYPE_OBJECT_ParamMeta*/
+    //         case SPA_PARAM_IO: id = "SPA_PARAM_IO"; break;			/**< configurable IO areas as SPA_TYPE_OBJECT_ParamIO */
+    //         case SPA_PARAM_EnumProfile: id = "SPA_PARAM_EnumProfile"; break;		/**< profile enumeration as SPA_TYPE_OBJECT_ParamProfile */
+    //         case SPA_PARAM_Profile: id = "SPA_PARAM_Profile"; break;		/**< profile configuration as SPA_TYPE_OBJECT_ParamProfile */
+    //         case SPA_PARAM_EnumPortConfig: id = "SPA_PARAM_EnumPortConfig"; break;	/**< port configuration enumeration as SPA_TYPE_OBJECT_ParamPortConfig */
+    //         case SPA_PARAM_PortConfig: id = "SPA_PARAM_PortConfig"; break;		/**< port configuration as SPA_TYPE_OBJECT_ParamPortConfig */
+    //         case SPA_PARAM_EnumRoute: id = "SPA_PARAM_EnumRoute"; break;		/**< routing enumeration as SPA_TYPE_OBJECT_ParamRoute */
+    //         case SPA_PARAM_Route: id = "SPA_PARAM_Route"; break;		/**< routing configuration as SPA_TYPE_OBJECT_ParamRoute */
+    //         case SPA_PARAM_Control: id = "SPA_PARAM_Control"; break;		/**< Control parameter, a SPA_TYPE_Sequence */
+    //         case SPA_PARAM_Latency: id = "SPA_PARAM_Latency"; break;		/**< latency reporting, a SPA_TYPE_OBJECT_ParamLatency */
+    //         case SPA_PARAM_ProcessLatency: id = "SPA_PARAM_ProcessLatency"; break;	/**< processing latency, a SPA_TYPE_OBJECT_ParamProcessLatency */
+    //         default: id = "ERROR"; break;
+    //     }
+    //     QString flags;
+    //     if (param->flags & SPA_PARAM_INFO_SERIAL) {
+    //         /*< bit to signal update even when the read/write flags don't change */
+    //         flags += "SERIAL";
+    //     }
+    //     if (param->flags & SPA_PARAM_INFO_READ) {
+    //         flags += "_READ";
+    //     }
+    //     if (param->flags & SPA_PARAM_INFO_WRITE) {
+    //         flags += "_WRITE";
+    //     }
+    //
+    //     qWarning() << "id: " << id << " -> " << flags << " <- " << param->user;
+    // }
+
+    // spa_debug_pod(2, NULL, info->props);
+    // spa_debug_pod(2, NULL, info->param);
+
+}
+
+
+void event_param(void *data,
+                 int seq,
+                 uint32_t id,
+                 uint32_t index,
+                 uint32_t next,
+                 const spa_pod *param)
+{
+    QPIPEWIRE_CAST(data);
+    _this->_event_param(seq, id, index, next, param);
+
+    //volume is here!
+}
+
+void QPipewireNode::_event_param(int seq, uint32_t id, uint32_t index, uint32_t next, const spa_pod* param)
+{
+    // spa_debug_pod(2, nullptr, param);
+
+    const spa_pod_prop *prop;
+    const spa_pod_object *obj = (const struct spa_pod_object*)param;
+    // SPA_POD_OBJECT_FOREACH(obj, prop) {
+    //     printf("prop key:%d\n", prop->key);
+    // }
+
+    prop = spa_pod_find_prop(param, nullptr, SPA_PROP_channelVolumes);
+    if (prop != nullptr) {
+        assert(spa_pod_is_array(&prop->value));
+        const spa_pod_array *volumes = (const spa_pod_array*) &prop->value;
+
+        uint32_t n_channels = 0;
+        uint32_t type = SPA_POD_ARRAY_VALUE_TYPE(volumes);
+        assert(SPA_TYPE_Float == type);
+        float *data = (float*) spa_pod_get_array((const spa_pod*) volumes, &n_channels);
+        m_volume = data[0];
+        emit volumeChanged(m_volume);
+    }
+}
+
+
+static const struct pw_node_events node_events = {
+    .version = PW_VERSION_NODE_EVENTS,
+    .info = &node_event_info,
+    .param = &event_param
+};
+
+
 QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_dict *props)
     : QObject(parent)
     , pipewire(parent)
@@ -107,12 +252,11 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
 
     const struct spa_dict_item *item;
     spa_dict_for_each(item, props) {
-        qDebug() << "Property[" << item->key << "] =" << item->value;
-        std::cout << "Property[" << item->key << "]=" << item->value << std::endl;
+        // qDebug() << "Property[" << item->key << "] =" << item->value;
+        // std::cout << "Property[" << item->key << "]=" << item->value << std::endl;
         m_properties[item->key] = item->value;
     }
 
-    //TODO volume property
 //    struct spa_pod_object *obj = (struct spa_pod_object *) m_spa_node;
 //    struct spa_pod_prop *prop;
 //    SPA_POD_OBJECT_FOREACH(obj, prop) {
@@ -130,10 +274,16 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
 //        const spa_pod *pod = &prop->value;
 //        std::cout << "KEY: " << prop->key << "=" << prop->value << std::endl;
 //    }
+    pw_proxy_add_object_listener((pw_proxy*) this->m_spa_node, &object_listener, &node_events, this);
+    // enumParams();
 }
 
 QPipewireNode::~QPipewireNode()
-{}
+{
+    if(m_spa_node != nullptr) {
+        pw_proxy_destroy((pw_proxy *) m_spa_node);
+    }
+}
 
 QString QPipewireNode::formatPercentage(float val, float quantum) const
 {
@@ -225,3 +375,14 @@ void QPipewireNode::setVolume(float volume)
     m_volume = volume;
     emit volumeChanged(m_volume);
 }
+
+
+void QPipewireNode::enumParams()
+// static bool do_enum_params(struct data *data, const char *cmd, char *args, char **error)
+{
+    spa_pod *filter = nullptr;
+    pw_node_enum_params(m_spa_node, _props_seq++, SPA_PARAM_Props, 0, 0, filter);
+    // pw_node_enum_params(m_spa_node, _props_seq++, SPA_PARAM_Route, 0, 0, filter);
+    // pw_node_set_param();
+}
+

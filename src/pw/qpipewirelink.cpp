@@ -27,6 +27,12 @@ QPipewireLink::QPipewireLink(QPipewire* parent, uint32_t id, const spa_dict* pro
     , m_input_node(spa_dict_get_u32(props, PW_KEY_LINK_INPUT_NODE))
     , m_output_node(spa_dict_get_u32(props, PW_KEY_LINK_INPUT_NODE))
 {
+	link = static_cast<pw_link*>(
+			pw_registry_bind(pipewire->registry, id, PW_TYPE_INTERFACE_Link, PW_VERSION_CLIENT, 0));
+
+	if (link == nullptr) {
+		throw std::runtime_error("Error creating link proxy");
+	}
 //     qDebug() << "Adding link (" << id << ") with props:";
 //     const struct spa_dict_item *item;
 //     spa_dict_for_each(item, props) {
@@ -36,5 +42,8 @@ QPipewireLink::QPipewireLink(QPipewire* parent, uint32_t id, const spa_dict* pro
 
 QPipewireLink::~QPipewireLink()
 {
+	if (link != nullptr) {
+		pw_proxy_destroy((struct pw_proxy*) link);
+	}
 }
 

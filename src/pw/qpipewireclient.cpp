@@ -38,6 +38,7 @@ void QPipewireClient::_client_info(const struct pw_client_info *info)
         const QString key = item->key;
         const QString value = item->value;
         m_properties[key] = value;
+		// std::clog << "client_" << this->m_id << ":[" << key.toStdString() << "]=" << value.toStdString() << std::endl;
         emit propertyChanged(key, value);
     }
 
@@ -51,12 +52,13 @@ static const pw_client_events client_events {
 
 //-----------------------------------------------------------------------------
 
-QPipewireClient::QPipewireClient(QPipewire *parent, uint32_t id, const char *type)
+QPipewireClient::QPipewireClient(QPipewire *parent, uint32_t id, const spa_dict* props)
     : QObject(parent)
     , pipewire(parent)
+	, m_id(id)
 {
     client = static_cast<pw_client*>(
-                 pw_registry_bind(pipewire->registry, id, type, PW_VERSION_CLIENT, 0));
+                 pw_registry_bind(pipewire->registry, id, PW_TYPE_INTERFACE_Client, PW_VERSION_CLIENT, 0));
 
     if (client == nullptr) {
         throw std::runtime_error("Error creating client proxy");

@@ -49,7 +49,7 @@ void QPipewireNodeListModel::sortList()
 #include <iostream>
 void QPipewireNodeListModel::append(QPipewireNode* node)
 {
-    qWarning() << "Adding new node " << node->name();
+    // qWarning() << "Adding new node " << node->name();
     beginInsertRows(QModelIndex(), m_nodes.size(), m_nodes.size());
     node->connect(node, &QPipewireNode::idChanged, this, [this, node]() {this->rowChanged(node, IDRole); });
     node->connect(node, &QPipewireNode::activeChanged, this, [this, node]() {this->rowChanged(node, ActiveRole);});
@@ -67,7 +67,7 @@ void QPipewireNodeListModel::append(QPipewireNode* node)
 
 bool QPipewireNodeListModel::removeOne(QPipewireNode* node)
 {
-    qWarning() << "Removing node" << node->name();
+    // qWarning() << "Removing node" << node->name();
     int index = m_nodes.indexOf(node);
     if (index != -1) {
         return removeAt(index);

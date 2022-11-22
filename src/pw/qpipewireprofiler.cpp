@@ -196,12 +196,12 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
 }
 
 // ----------------------------------------------------------------------------
-QPipewireProfiler::QPipewireProfiler(QPipewire *parent, uint32_t id, const char *type)
+QPipewireProfiler::QPipewireProfiler(QPipewire *parent, uint32_t id, const spa_dict* props)
     : QObject(parent)
     , pipewire(parent)
 {
     profiler = static_cast<pw_proxy*>(
-                   pw_registry_bind(pipewire->registry, id, type, PW_VERSION_PROFILER, 0));
+                   pw_registry_bind(pipewire->registry, id, PW_TYPE_INTERFACE_Profiler, PW_VERSION_PROFILER, 0));
     if (profiler == nullptr) {
         throw std::runtime_error("Error creating profiler proxy");
     }

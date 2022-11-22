@@ -17,6 +17,7 @@
 #pragma once
 
 #include <qobject.h>
+#include "qpipewire.h"
 
 /**
  * @todo write docs
@@ -24,35 +25,45 @@
 class QPipewirePort : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(uint32_t m_id READ m_id WRITE setM_id NOTIFY m_idChanged)
+    Q_PROPERTY(uint32_t id READ id WRITE set_id NOTIFY idChanged)
 
 public:
     /**
      * Default constructor
      */
-    QPipewirePort();
+    QPipewirePort(QPipewire *parent, uint32_t id, const spa_dict *props);
 
     /**
      * Destructor
      */
-    ~QPipewirePort();
+    ~QPipewirePort() override;
 
     /**
      * @return the m_id
      */
-    uint32_t m_id() const;
+    uint32_t id() const;
+
+
+	void _port_info(const struct pw_port_info *info);
+
+	void _port_param(int seq,
+	                 uint32_t id, uint32_t index, uint32_t next,
+	                 const struct spa_pod *param);
 
 public Q_SLOTS:
     /**
-     * Sets the m_id.
+     * Sets the id.
      *
-     * @param m_id the new m_id
+     * @param id the new id
      */
-    void setM_id(uint32_t m_id);
+    void set_id(uint32_t id);
 
 Q_SIGNALS:
-    void m_idChanged(uint32_t m_id);
+    void idChanged(uint32_t id);
 
 private:
-    uint32_t m_m_id;
+	QPipewire* pipewire;
+    uint32_t m_id = 0;
+	pw_port *port = nullptr;
+	spa_hook port_listener;
 };

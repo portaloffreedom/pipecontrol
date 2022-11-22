@@ -38,7 +38,7 @@ protected:
     struct spa_hook metadata_listener;
 
 public:
-    explicit QPipewireMetadata(QPipewire *parent, uint32_t id, const char *type);
+    explicit QPipewireMetadata(QPipewire *parent, uint32_t id, const spa_dict* props);
     virtual ~QPipewireMetadata();
 
     void setProperty(const char *key, const char *value);

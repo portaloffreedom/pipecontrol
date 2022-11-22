@@ -47,7 +47,7 @@ private:
     int m_force_buffer = 0;
 
 public:
-    explicit QPipewireSettings(QPipewire *parent, uint32_t id, const char *type);
+    explicit QPipewireSettings(QPipewire *parent, uint32_t id, const spa_dict* props);
     virtual ~QPipewireSettings() = default;
 
     int logLevel() { return m_logLevel; }

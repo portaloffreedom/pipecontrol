@@ -20,6 +20,8 @@
 #include "src/pw/qpipewirenode.h"
 #include "src/pw/qpipewirelink.h"
 #include "src/pw/qpipewirealsanode.h"
+#include "src/pw/qpipewireport.h"
+#include "src/pw/qpipewiredevice.h"
 
 #include <spa/utils/result.h>
 #include <spa/utils/defs.h>
@@ -159,18 +161,18 @@ void QPipewire::_registry_event(uint32_t id,
                                 uint32_t version,
                                 const struct spa_dict *props)
 {
-    qDebug() << "object: id(" << id << ") type(" << type << '/' << version << ')';
+    // qDebug() << "object: id(" << id << ") type(" << type << '/' << version << ')';
 
     emit registryObject(id, permissions, type, version, props);
 
-    if(pw_client == nullptr && strcmp(type, PW_TYPE_INTERFACE_Client) == 0)
+    if(strcmp(type, PW_TYPE_INTERFACE_Client) == 0)
     {
-        pw_client = new QPipewireClient(this, id, type);
-        emit clientChanged();
+        QPipewireClient *pw_client = new QPipewireClient(this, id, props);
+//        emit clientChanged();
 
         // Shot only once when data has arrived
         QMetaObject::Connection *const connection = new QMetaObject::Connection;
-        *connection = connect(pw_client, &QPipewireClient::propertiesChanged, [this, connection]() {
+        *connection = connect(pw_client, &QPipewireClient::propertiesChanged, [this, pw_client, connection]() {
             if (this->isPipewireMediaSession()) {
                 // creating alsa properties when media-session is not installed could crash the application
                 alsa_properties = new AlsaProperties(pw_client, this);
@@ -179,6 +181,7 @@ void QPipewire::_registry_event(uint32_t id,
             // delete so the connection is not shot twice
             delete connection;
         });
+		pw_clients.push_back(pw_client);
     }
     else if (strcmp(type, PW_TYPE_INTERFACE_Metadata) == 0)
     {
@@ -189,20 +192,20 @@ void QPipewire::_registry_event(uint32_t id,
             if (this->pw_settings == nullptr &&
                     streq(metadata_name, "settings"))
             {
-                pw_settings = new QPipewireSettings(this, id, type);
+                pw_settings = new QPipewireSettings(this, id, props);
                 emit settingsChanged();
             } else {
-                qWarning() << "Ignoring metadata \"" << metadata_name << '"';
+                // qWarning() << "Ignoring metadata \"" << metadata_name << '"';
             }
         }
     }
     else if (streq(type, PW_TYPE_INTERFACE_Profiler))
     {
         if (pw_profiler != nullptr) {
-            qWarning() << "Ignoring profiler " << id << ": already attached";
+            // qWarning() << "Ignoring profiler " << id << ": already attached";
             return;
         }
-        pw_profiler = new QPipewireProfiler(this, id, type);
+        pw_profiler = new QPipewireProfiler(this, id, props);
         emit profilerChanged();
     }
     else if (streq(type, PW_TYPE_INTERFACE_Node))
@@ -215,27 +218,38 @@ void QPipewire::_registry_event(uint32_t id,
             node = new QPipewireNode(this, id, props);
         }
         m_nodes->append(node);
-        qWarning() << "Adding node id(" << id << "): " << node->name();
+        // qWarning() << "Adding node id(" << id << "): " << node->name();
         emit nodesChanged();
     }
     else if (streq(type, PW_TYPE_INTERFACE_Link))
     {
-        QPipewireLink *link = new QPipewireLink(this, id, props);
-        m_links.append(link);
-        qWarning() << "Adding link id(" << id << "): ";
-        emit linksChanged();
+	    QPipewireLink *link = new QPipewireLink(this, id, props);
+	    m_links.append(link);
+	    // qWarning() << "Adding link id(" << id << "): ";
+	    emit linksChanged();
+    }
+    else if (streq(type, PW_TYPE_INTERFACE_Port))
+    {
+	    QPipewirePort *port = new QPipewirePort(this, id, props);
+	    m_ports.append(port);
+	    // qWarning() << "Adding port id(" << id << "): ";
+	    emit portsChanged();
+    }
+    else if (streq(type, PW_TYPE_INTERFACE_Device)) {
+        QPipewireDevice *device = new QPipewireDevice(this, id, props);
+        m_devices.append(device);
     }
 }
 
 void QPipewire::_registry_event_remove(uint32_t id)
 {
-    qWarning() << "Attempting to remove id(" << id << ")";
+    // qWarning() << "Attempting to remove id(" << id << ")";
     for(int i=0; i<m_nodes->size(); i++) {
         QPipewireNode *candidate = (*m_nodes)[i];
         if (candidate && candidate->id_u32() == id) {
             QPipewireNode *node = candidate;
             // ALL interfaces that are not NODES are ignored here.
-            qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
+            // qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
             m_nodes->removeAt(i);
             emit nodesChanged();
             node->deleteLater();
@@ -329,7 +343,7 @@ QPipewire::~QPipewire()
     if (pw_settings != nullptr) {
         delete pw_settings;
     }
-    if (pw_client != nullptr) {
+    for (QPipewireClient* pw_client: pw_clients) {
         delete pw_client;
     }
     if (alsa_properties != nullptr) {

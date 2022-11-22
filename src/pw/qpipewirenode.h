@@ -23,6 +23,7 @@
 #include <spa/utils/defs.h>
 #include <spa/debug/pod.h>
 #include <spa/node/node.h>
+#include <pipewire/node.h>
 
 class QPipewire;
 class QPipewireProfiler;
@@ -65,6 +66,7 @@ Q_OBJECT
     Q_PROPERTY(int error READ error NOTIFY errorChanged)
     Q_PROPERTY(int xrun READ xrun NOTIFY xrunChanged)
     Q_PROPERTY(float volume READ volume WRITE setVolume NOTIFY volumeChanged)
+    Q_PROPERTY(QString state READ state NOTIFY stateChanged)
 
 signals:
     void idChanged();
@@ -84,11 +86,13 @@ signals:
     void errorChanged();
     void xrunChanged();
     void volumeChanged(float);
+    void stateChanged();
 
 protected:
     QPipewire *pipewire = nullptr;
 
     uint32_t m_id = 0;
+    pw_node_state m_state = pw_node_state::PW_NODE_STATE_CREATING;
     QString m_name;
     QString m_node_name;
     QString m_node_description;
@@ -99,6 +103,9 @@ protected:
     struct spa_node *m_spa_node = nullptr;
     struct spa_node_info m_spa_node_info {};
     QHash<QString, QString> m_properties;
+    spa_hook object_listener;
+    uint32_t _props_seq = 0;
+
 
     struct measurement {
             int32_t index = 0;
@@ -128,6 +135,9 @@ public:
     QPipewireNode() = default;
     explicit QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_dict *props);
     virtual ~QPipewireNode();
+
+    void _node_event_info(const pw_node_info *info);
+    void _event_param(int seq, uint32_t id, uint32_t index, uint32_t next, const spa_pod *param);
 
     int id() const { return m_id; }
     uint32_t id_u32() const { return m_id; }
@@ -159,6 +169,16 @@ public:
     int error() const { return errors; }
     int xrun() const { return info.xrun_count; }
     float volume() const { return m_volume; }
+    QString state() const {
+        switch (m_state) {
+            case PW_NODE_STATE_ERROR: return "ERROR";
+            case PW_NODE_STATE_CREATING: return "CREATING";
+            case PW_NODE_STATE_SUSPENDED: return "SUSPENDED";
+            case PW_NODE_STATE_IDLE: return "IDLE";
+            case PW_NODE_STATE_RUNNING: return "RUNNING";
+            default: return "UNKNOWN";
+        }
+    }
 
     Q_INVOKABLE QString formatPercentage(float val, float quantum) const;
     Q_INVOKABLE QIcon activeIcon(bool active) const;
@@ -185,6 +205,7 @@ protected:
     Q_INVOKABLE QVariant property(const char* key);
     Q_INVOKABLE void setProperty(const char* key, QVariant value);
     void setProperties(struct spa_pod *properties);
+    void enumParams();
 
     friend class QPipewireProfiler;
 };

@@ -28,6 +28,8 @@
 class QPipewireMetadata;
 class QPipewireSettings;
 class QPipewireLink;
+class QPipewirePort;
+class QPipewireDevice;
 class QPipewireClient;
 class AlsaProperties;
 
@@ -44,10 +46,11 @@ class QPipewire : public QObject
     Q_OBJECT
     Q_PROPERTY(QString appVersion READ appVersion NOTIFY appVersionChanged)
     Q_PROPERTY(QPipewireSettings* settings READ settings NOTIFY settingsChanged)
-    Q_PROPERTY(QPipewireClient* client READ client NOTIFY clientChanged)
+//    Q_PROPERTY(QPipewireClient* client READ client NOTIFY clientChanged)
     Q_PROPERTY(QPipewireNodeListModel* nodes READ nodes NOTIFY nodesChanged)
     Q_PROPERTY(QList<QPipewireNode*> nodeList READ nodeList NOTIFY nodesChanged)
     Q_PROPERTY(QList<QPipewireLink*> linkList READ linkList NOTIFY linksChanged)
+    Q_PROPERTY(QList<QPipewirePort*> portList READ portList NOTIFY portsChanged)
     Q_PROPERTY(QPipewireProfiler* profiler READ profiler NOTIFY profilerChanged)
     Q_PROPERTY(SystemdService* pipewireMediaSession READ pipewireMediaSession NOTIFY pipewireMediaSessionChanged)
     Q_PROPERTY(SystemdService* wirePlumberService READ wirePlumberService NOTIFY wirePlumberServiceChanged)
@@ -63,9 +66,10 @@ signals:
 
     void appVersionChanged(); //bogus, never emitted
     void settingsChanged();
-    void clientChanged();
+//    void clientChanged();
     void nodesChanged();
     void linksChanged();
+    void portsChanged();
     void profilerChanged();
     void pipewireMediaSessionChanged();
     void wirePlumberServiceChanged();
@@ -85,10 +89,12 @@ private:
     int sync = 0;
     bool round_trip_done = false;
 
-    QPipewireClient *pw_client = nullptr;
+    std::vector<QPipewireClient *> pw_clients = {};
     QPipewireSettings *pw_settings = nullptr;
     QPipewireNodeListModel *m_nodes = nullptr;
     QList<QPipewireLink*> m_links;
+    QList<QPipewirePort*> m_ports;
+    QList<QPipewireDevice*> m_devices;
     QPipewireProfiler *pw_profiler = nullptr;
     SystemdService *pipewire_media_session = nullptr;
     SystemdService *wireplumber_service = nullptr;
@@ -120,12 +126,13 @@ public:
     Q_INVOKABLE bool isWireplumber() {
         return wireplumber_service->running();
     }
-    QPipewireClient* client() { return pw_client; }
+//    QPipewireClient* client() { return pw_client; }
     QPipewireSettings* settings() { return pw_settings; }
     QPipewireProfiler* profiler() { return pw_profiler; }
     QPipewireNodeListModel* nodes() { return m_nodes; }
     QList<QPipewireNode*> nodeList() { return m_nodes->list(); }
     QList<QPipewireLink*> linkList() { return m_links; }
+    QList<QPipewirePort*> portList() { return m_ports; }
     SystemdService* pipewireMediaSession() { return pipewire_media_session; }
     SystemdService* wirePlumberService() { return wireplumber_service; }
     AlsaProperties* alsaProperties() { return alsa_properties; }
@@ -155,5 +162,8 @@ private:
     friend class QPipewireClient;
     friend class QPipewireMetadata;
     friend class QPipewireProfiler;
-    friend class QPipewireNode;
+	friend class QPipewireNode;
+	friend class QPipewireLink;
+	friend class QPipewirePort;
+    friend class QPipewireDevice;
 };

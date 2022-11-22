@@ -96,9 +96,7 @@ int main(int argc, char *argv[])
       return -1;
   }
 
-  qDebug() << "Start";
   int ret = QGuiApplication::exec();
-  qDebug() << "End";
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
   // when registering a type in `qmlRegisterSingletonType`, the object is deleted automatically by the qt engine

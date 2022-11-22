@@ -18,6 +18,7 @@
 
 #include <qobject.h>
 #include <spa/utils/dict.h>
+#include <pipewire/link.h>
 
 class QPipewire;
 
@@ -42,31 +43,31 @@ signals:
     void outputNodeChanged();
 
 protected:
-    QPipewire* pipewire;
-    uint32_t m_id;
-    uint32_t m_input_port;
-    uint32_t m_output_port;
-    uint32_t m_input_node;
-    uint32_t m_output_node;
+    QPipewire* pipewire = nullptr;
+    const uint32_t m_id;
+    const uint32_t m_input_port;
+    const uint32_t m_output_port;
+    const uint32_t m_input_node;
+    const uint32_t m_output_node;
+	pw_link* link = nullptr;
 
 public:
     /**
      * Default constructor
      */
-    QPipewireLink() = default;
     QPipewireLink(QPipewire* parent, uint32_t id, const spa_dict* props);
 
     /**
      * Destructor
      */
-    virtual ~QPipewireLink();
+    ~QPipewireLink() override;
 
-    int id() const { return m_id; }
-    uint32_t id_u32() const { return m_id; }
-    uint32_t inputPort() const  { return m_input_port; }
-    uint32_t outputPort() const { return m_output_port; }
-    uint32_t inputNode() const  { return m_input_node; }
-    uint32_t outputNode() const { return m_output_node; }
+    [[nodiscard]] int id() const { return m_id; }
+    [[nodiscard]] uint32_t id_u32() const { return m_id; }
+    [[nodiscard]] uint32_t inputPort() const  { return m_input_port; }
+    [[nodiscard]] uint32_t outputPort() const { return m_output_port; }
+    [[nodiscard]] uint32_t inputNode() const  { return m_input_node; }
+    [[nodiscard]] uint32_t outputNode() const { return m_output_node; }
 };
 
 std::ostream& operator<< (std::ostream& out, const QPipewireLink& link);

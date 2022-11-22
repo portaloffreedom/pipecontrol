@@ -24,6 +24,8 @@ Kirigami.ScrollablePage {
         Kirigami.SwipeListItem {
             id: listItem
             contentItem: RowLayout {
+                id: noderowcomponent
+                opacity: model.node.state == "RUNNING" ? 1.0 : 0.5
 
                 Kirigami.ListItemDragHandle {
                     visible: false //model.driverID > 0
@@ -144,6 +146,7 @@ Kirigami.ScrollablePage {
                     Controls.Label {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
+                        // text: node.volume.toFixed(4)
                         text: Pipewire.formatTime(wait)
                     }
                 }
@@ -207,6 +210,12 @@ Kirigami.ScrollablePage {
                             id: classField
                             Kirigami.FormData.label: i18nc("@label:textbox", "Media Class:")
                             text: model.node.mediaClass
+                            enabled: false
+                        }
+                        Controls.Label {
+                            id: runningField
+                            Kirigami.FormData.label: i18nc("@label:stateLabel", "State:")
+                            text: i18nc("@label:state", model.node.state)
                             enabled: false
                         }
                     }

@@ -23,7 +23,7 @@ Q_OBJECT
 public:
     QPipewireAlsaNode() = default;
     explicit QPipewireAlsaNode(QPipewire *parent, uint32_t id, const struct spa_dict *props);
-    virtual ~QPipewireAlsaNode() = default;
+    ~QPipewireAlsaNode() override = default;
 
-    Q_INVOKABLE virtual bool isAlsa() const { return true; }
+    Q_INVOKABLE [[nodiscard]] bool isAlsa() const override { return true; }
 };

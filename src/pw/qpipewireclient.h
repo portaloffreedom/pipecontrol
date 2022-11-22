@@ -33,14 +33,17 @@ public:
 
     Q_OBJECT
     Q_PROPERTY(QVariantMap properties READ properties NOTIFY propertiesChanged)
+	Q_PROPERTY(int id READ id NOTIFY idChanged)
     Q_PROPERTY(QList<QVariantMap> propertiesList READ propertiesList NOTIFY propertiesChanged)
 
 signals:
     void propertiesChanged();
+    void idChanged();
     void propertyChanged(QString key, QString value);
 
 private:
     QPipewire *pipewire = nullptr;
+	uint32_t m_id = 0;
 
     struct pw_client *client = nullptr;
     struct spa_hook client_listener;
@@ -48,8 +51,10 @@ private:
     QMap<QString,QString> m_properties;
 
 public:
-    explicit QPipewireClient(QPipewire *parent, uint32_t id, const char *type);
+    explicit QPipewireClient(QPipewire *parent, uint32_t id, const spa_dict* props);
     virtual ~QPipewireClient();
+
+	[[nodiscard]] int id() const { return m_id; }
 
     QString property(const QString &key)
     {
