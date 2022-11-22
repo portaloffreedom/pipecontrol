@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(pipecontrol VERSION 0.2.7 LANGUAGES C CXX)
+project(pipecontrol VERSION 0.2.8 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -113,4 +113,4 @@ install(TARGETS pipecontrol RUNTIME DESTINATION "bin/")
 install(FILES ${CMAKE_BINARY_DIR}/PipeControl.desktop DESTINATION "share/applications/" )
 install(FILES resources/pipecontrol.svg DESTINATION "share/icons/hicolor/scalable/apps/" )
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/src/examples")
+#add_subdirectory("${CMAKE_SOURCE_DIR}/src/examples")
