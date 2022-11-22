@@ -25,7 +25,7 @@ Kirigami.ScrollablePage {
             id: listItem
             contentItem: RowLayout {
                 id: noderowcomponent
-                opacity: model.node.state == "RUNNING" ? 1.0 : 0.5
+                opacity: model.node.state === "RUNNING" ? 1.0 : 0.5
 
                 Kirigami.ListItemDragHandle {
                     visible: false //model.driverID > 0
