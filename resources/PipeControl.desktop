@@ -1,4 +1,5 @@
 [Desktop Entry]
+Categories=AudioVideo;Music;
 Name=PipeControl
 Exec=${CMAKE_INSTALL_PREFIX}/bin/pipecontrol %u
 Type=Application
