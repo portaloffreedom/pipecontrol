@@ -121,7 +121,7 @@ protected:
     struct driver {
             int64_t count = 0;
             float cpu_load[3] = {0,0,0};
-            struct spa_io_clock clock = {0,0,"",0,{0,0},0,0,0,0,0,{0,0,0,0,0,0,0,0}};
+            struct spa_io_clock clock = {0,0,"",0,{0,0},0,0,0,0,0,{0,0},0,0,0,0,0};
             uint32_t xrun_count = 0;
     } info;
 
