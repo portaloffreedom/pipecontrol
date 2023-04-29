@@ -225,29 +225,29 @@ Kirigami.ScrollablePage {
                 onClicked: Pipewire.wirePlumberService.restart()
             }
 
-            Kirigami.Separator {
-                visible: settingsPage.show_advanced
-                Kirigami.FormData.isSection: true
-                Kirigami.FormData.label: i18n("Pipewire client properties")
-            }
+            //Kirigami.Separator {
+            //    visible: settingsPage.show_advanced
+            //    Kirigami.FormData.isSection: true
+            //    Kirigami.FormData.label: i18n("Pipewire client properties")
+            //}
 
-            ComboBox {
-                visible: settingsPage.show_advanced
-                Kirigami.FormData.label: i18n("Client Properties")
-                id: clientBox
-                textRole: "name"
-                valueRole: "value"
-                Component.onCompleted: {
-                    currentIndex = 0
-                }
+            //ComboBox {
+            //    visible: settingsPage.show_advanced
+            //    Kirigami.FormData.label: i18n("Client Properties")
+            //    id: clientBox
+            //    textRole: "name"
+            //    valueRole: "value"
+            //    Component.onCompleted: {
+            //        currentIndex = 0
+            //    }
 
-                model: Pipewire.client.propertiesList
-            }
+            //    model: Pipewire.client.propertiesList
+            //}
 
-            Label {
-                visible: settingsPage.show_advanced
-                text: clientBox.currentValue
-            }
+            //Label {
+            //    visible: settingsPage.show_advanced
+            //    text: clientBox.currentValue
+            //}
         }
     }
 }
