@@ -247,7 +247,7 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
         m_node_type = NodeTypeNone;
     }
 
-    m_spa_node = static_cast<spa_node*>(
+    m_pw_node = static_cast<pw_node*>(
         pw_registry_bind(pipewire->registry, m_id, PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, 0));
 
     const struct spa_dict_item *item;
@@ -257,7 +257,7 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
         m_properties[item->key] = item->value;
     }
 
-//    struct spa_pod_object *obj = (struct spa_pod_object *) m_spa_node;
+//    struct spa_pod_object *obj = (struct spa_pod_object *) m_pw_node;
 //    struct spa_pod_prop *prop;
 //    SPA_POD_OBJECT_FOREACH(obj, prop) {
 //        switch (prop->key) {
@@ -274,14 +274,14 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
 //        const spa_pod *pod = &prop->value;
 //        std::cout << "KEY: " << prop->key << "=" << prop->value << std::endl;
 //    }
-    pw_proxy_add_object_listener((pw_proxy*) this->m_spa_node, &object_listener, &node_events, this);
+    pw_proxy_add_object_listener((pw_proxy*) this->m_pw_node, &object_listener, &node_events, this);
     // enumParams();
 }
 
 QPipewireNode::~QPipewireNode()
 {
-    if(m_spa_node != nullptr) {
-        pw_proxy_destroy((pw_proxy *) m_spa_node);
+    if(m_pw_node != nullptr) {
+        pw_proxy_destroy((pw_proxy *) m_pw_node);
     }
 }
 
@@ -349,7 +349,7 @@ void QPipewireNode::setProperty(const char *key, QVariant value)
 void QPipewireNode::setProperties(struct spa_pod *properties)
 {
     spa_debug_pod(0, nullptr, properties);
-    int res = pw_node_set_param(m_spa_node, SPA_PARAM_Props, 0, properties);
+    int res = pw_node_set_param(m_pw_node, SPA_PARAM_Props, 0, properties);
     if (res < 0) {
         std::ostringstream err_msg;
         err_msg << "Got set_property error \"" << res << '"';
@@ -381,8 +381,8 @@ void QPipewireNode::enumParams()
 // static bool do_enum_params(struct data *data, const char *cmd, char *args, char **error)
 {
     spa_pod *filter = nullptr;
-    pw_node_enum_params(m_spa_node, _props_seq++, SPA_PARAM_Props, 0, 0, filter);
-    // pw_node_enum_params(m_spa_node, _props_seq++, SPA_PARAM_Route, 0, 0, filter);
+    pw_node_enum_params(m_pw_node, _props_seq++, SPA_PARAM_Props, 0, 0, filter);
+    // pw_node_enum_params(m_pw_node, _props_seq++, SPA_PARAM_Route, 0, 0, filter);
     // pw_node_set_param();
 }
 

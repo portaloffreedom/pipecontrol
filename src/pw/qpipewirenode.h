@@ -100,7 +100,7 @@ protected:
     QString m_media_class;
     NodeType m_node_type = NodeTypeNone;
     MediaType m_media_type = MediaTypeNone;
-    struct spa_node *m_spa_node = nullptr;
+    struct pw_node *m_pw_node = nullptr;
     struct spa_node_info m_spa_node_info {};
     QHash<QString, QString> m_properties;
     spa_hook object_listener;
