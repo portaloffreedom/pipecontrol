@@ -25,7 +25,7 @@ class AlsaProperties : public QObject
     Q_OBJECT
     Q_PROPERTY(bool batchDisabled READ batchDisabled WRITE setBatchDisabled NOTIFY batchDisabledChanged)
     Q_PROPERTY(int periodSize READ periodSize WRITE setPeriodSize NOTIFY periodSizeChanged)
-signals:
+Q_SIGNALS:
     void batchDisabledChanged(bool);
     void periodSizeChanged(int);
 

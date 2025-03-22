@@ -70,7 +70,7 @@ void QPipewireDevice::_device_param(int seq, uint32_t id, uint32_t index, uint32
     assert(SPA_TYPE_Float == type);
     float *data = (float*) spa_pod_get_array((const spa_pod*) volumes, &n_channels);
     m_volume = data[0];
-    emit volumeChanged(m_volume);
+    Q_EMIT volumeChanged(m_volume);
     std::clog << "New volume for device " << m_id << " is " << m_volume << std::endl;
 }
 

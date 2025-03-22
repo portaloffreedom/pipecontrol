@@ -82,7 +82,7 @@ void QPipewirePort::set_id(uint32_t id)
     }
 
     m_id = id;
-    emit idChanged(m_id);
+    Q_EMIT idChanged(m_id);
 }
 
 void QPipewirePort::_port_info(const struct pw_port_info *info)

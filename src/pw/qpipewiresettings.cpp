@@ -40,19 +40,19 @@ void QPipewireSettings::keyUpdated(uint32_t id, const char *key, const char *typ
 {
     if (strcmp(key, LOG_LEVEL_KEY)==0){
         m_logLevel = static_cast<spa_log_level>(std::stoi(value));
-        emit logLevelChanged(m_logLevel);
+        Q_EMIT logLevelChanged(m_logLevel);
     } else if (strcmp(key, FORCE_SAMPLERATE_KEY)==0){
         m_force_sampleRate = std::stoi(value);
-        emit force_sampleRateChanged(m_force_sampleRate);
+        Q_EMIT force_sampleRateChanged(m_force_sampleRate);
     } else if (strcmp(key, FORCE_BUFFER_KEY)==0) {
         m_force_buffer = std::stoi(value);
-        emit force_bufferChanged(m_force_buffer);
+        Q_EMIT force_bufferChanged(m_force_buffer);
     } else if (strcmp(key, MIN_BUFFER_KEY)==0) {
         m_minBuffer = std::stoi(value);
-        emit minBufferChanged(m_minBuffer);
+        Q_EMIT minBufferChanged(m_minBuffer);
     } else if (strcmp(key, MAX_BUFFER_KEY)==0) {
         m_maxBuffer = std::stoi(value);
-        emit maxBufferChanged(m_maxBuffer);
+        Q_EMIT maxBufferChanged(m_maxBuffer);
     // } else if (strcmp(key, RATE_KEY)==0) {
     //     //TODO
     // } else if (strcmp(key, ALLOWED_RATES_KEY)==0) {

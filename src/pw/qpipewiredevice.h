@@ -32,7 +32,7 @@ class QPipewireDevice : public QObject
 Q_OBJECT
     Q_PROPERTY(float volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
-signals:
+Q_SIGNALS:
     void volumeChanged(float);
 
 public:

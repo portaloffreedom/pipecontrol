@@ -64,17 +64,17 @@ void QPipewireNode::_node_event_info(const pw_node_info* info)
     }
     if (info->change_mask & PW_NODE_CHANGE_MASK_STATE) {
         m_state = info->state;
-        emit stateChanged();
+        Q_EMIT stateChanged();
         // qDebug() << "CHANGE STATE";
     }
     if (info->change_mask & PW_NODE_CHANGE_MASK_PROPS) {
         spa_dict_for_each(item, info->props) {
             //volume is not here....
-            const QString key = item->key;
-            const QString value = item->value;
+            const QString key = QString::fromUtf8(item->key);
+            const QString value = QString::fromUtf8(item->value);
             m_properties[key] = value;
             //qWarning() << "node_" << this->m_name << ":[" << key << "]=" << value;
-            //emit propertyChanged(key, value);
+            //Q_EMIT propertyChanged(key, value);
         }
         // qDebug() << "CHANGE PROPS";
     }
@@ -89,7 +89,7 @@ void QPipewireNode::_node_event_info(const pw_node_info* info)
     //     const QString value = item->value;
     //     // m_properties[key] = value;
     //     qWarning() << "node_" << this->m_name << ":[" << key << "]=" << value;
-    //     //emit propertyChanged(key, value);
+    //     //Q_EMIT propertyChanged(key, value);
     // }
 
     // for(uint32_t i=0; i<info->n_params; i++) {
@@ -169,7 +169,7 @@ void QPipewireNode::_event_param(int seq, uint32_t id, uint32_t index, uint32_t 
         assert(SPA_TYPE_Float == type);
         float *data = (float*) spa_pod_get_array((const spa_pod*) volumes, &n_channels);
         m_volume = data[0];
-        emit volumeChanged(m_volume);
+        Q_EMIT volumeChanged(m_volume);
     }
 }
 
@@ -190,8 +190,8 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
     , m_driver(this)
 
 {
-    m_node_name = spa_dict_lookup(props, PW_KEY_NODE_NAME);
-    m_node_description = spa_dict_lookup(props, PW_KEY_NODE_DESCRIPTION);
+    m_node_name = QString::fromUtf8(spa_dict_lookup(props, PW_KEY_NODE_NAME));
+    m_node_description = QString::fromUtf8(spa_dict_lookup(props, PW_KEY_NODE_DESCRIPTION));
 
     // Find name
     const char* str;
@@ -203,44 +203,44 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
     }
 
     if (str == nullptr) {
-        m_name = QString(id);
+        m_name = QString::number(id);
     } else {
-        m_name = str;
+        m_name = QString::fromUtf8(str);
     }
 
     // Find node type
     if ((str = spa_dict_lookup(props, PW_KEY_MEDIA_CATEGORY)) != nullptr) {
-        m_category = str;
+        m_category = QString::fromUtf8(str);
     } else {
-        m_category = "";
+        m_category = QStringLiteral("");
     }
 
     // Find node type
     if ((str = spa_dict_lookup(props, PW_KEY_MEDIA_CLASS)) != nullptr) {
-        m_media_class = str;
+        m_media_class = QString::fromUtf8(str);
 
-        if (m_media_class.contains("Audio"))
+        if (m_media_class.contains(QStringLiteral("Audio")))
             m_media_type = MediaTypeAudio;
-        else if (m_media_class.contains("Video"))
+        else if (m_media_class.contains(QStringLiteral("Video")))
             m_media_type = MediaTypeVideo;
-        else if (m_media_class.contains("Midi"))
+        else if (m_media_class.contains(QStringLiteral("Midi")))
             m_media_type = MediaTypeMidi;
         else
             m_media_type = MediaTypeNone;
     } else {
-        m_media_class = "";
+        m_media_class = QStringLiteral("");
     }
 
-    if ((!m_category.isEmpty()) && m_category.contains("Duplex")) {
+    if ((!m_category.isEmpty()) && m_category.contains(QStringLiteral("Duplex"))) {
         m_node_type = NodeTypeNone;
     } else if (!m_media_class.isEmpty()) {
-        if (m_media_class.contains("Sink")) {
+        if (m_media_class.contains(QStringLiteral("Sink"))) {
             m_node_type = NodeTypeSink;
-        } else if (m_media_class.contains("Input")) {
+        } else if (m_media_class.contains(QStringLiteral("Input"))) {
             m_node_type = NodeTypeInput;
-        } else if (m_media_class.contains("Source")) {
+        } else if (m_media_class.contains(QStringLiteral("Source"))) {
             m_node_type = NodeTypeSource;
-        } else if (m_media_class.contains("Output")) {
+        } else if (m_media_class.contains(QStringLiteral("Output"))) {
             m_node_type = NodeTypeOutput;
         }
     } else {
@@ -254,7 +254,7 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
     spa_dict_for_each(item, props) {
         // qDebug() << "Property[" << item->key << "] =" << item->value;
         // std::cout << "Property[" << item->key << "]=" << item->value << std::endl;
-        m_properties[item->key] = item->value;
+        m_properties[QString::fromUtf8(item->key)] = QString::fromUtf8(item->value);
     }
 
 //    struct spa_pod_object *obj = (struct spa_pod_object *) m_pw_node;
@@ -268,7 +268,7 @@ QPipewireNode::QPipewireNode(QPipewire *parent, uint32_t id, const struct spa_di
 //            if (volume == m_volume)
 //                continue;
 //            m_volume = volume;
-//            emit volumeChanged(m_volume);
+//            Q_EMIT volumeChanged(m_volume);
 //            break;
 //        }
 //        const spa_pod *pod = &prop->value;
@@ -295,9 +295,9 @@ QString QPipewireNode::formatPercentage(float val, float quantum) const
 QIcon QPipewireNode::activeIcon(bool active) const
 {
     if(active) {
-        return QIcon::fromTheme("media-playback-start");
+        return QIcon::fromTheme(QStringLiteral("media-playback-start"));
     } else {
-        return QIcon::fromTheme("media-playback-pause");
+        return QIcon::fromTheme(QStringLiteral("media-playback-pause"));
     }
 }
 
@@ -305,22 +305,22 @@ void QPipewireNode::setDriver(QPipewireNode* newDriver)
 {
     if (newDriver == m_driver) return;
     m_driver = newDriver;
-    emit driverChanged();
+    Q_EMIT driverChanged();
 }
 
 void QPipewireNode::setMeasurement(const struct QPipewireNode::measurement &measure)
 {
     const struct measurement old = this->measurement;
     this->measurement = measure;
-    if (old.status != measure.status) emit activeChanged();
+    if (old.status != measure.status) Q_EMIT activeChanged();
     if (old.signal != measure.signal || old.awake != measure.awake)
-        emit waitingChanged();
+        Q_EMIT waitingChanged();
     if (old.finish != measure.finish || old.awake != measure.awake)
-        emit busyChanged();
+        Q_EMIT busyChanged();
     if (m_driver != this && old.latency.num != measure.latency.num)
-        emit quantumChanged();
+        Q_EMIT quantumChanged();
     if (m_driver != this && old.latency.denom != measure.latency.denom)
-        emit rateChanged();
+        Q_EMIT rateChanged();
 }
 
 void QPipewireNode::setInfo(const struct QPipewireNode::driver &info)
@@ -329,16 +329,16 @@ void QPipewireNode::setInfo(const struct QPipewireNode::driver &info)
     this->info = info;
     if (m_driver == this &&
         (old.clock.duration != info.clock.duration || old.clock.rate.num != info.clock.rate.num))
-        emit quantumChanged();
+        Q_EMIT quantumChanged();
     if (m_driver == this && old.clock.rate.denom != info.clock.rate.denom)
-        emit rateChanged();
+        Q_EMIT rateChanged();
     if (old.xrun_count != info.xrun_count)
-        emit xrunChanged();
+        Q_EMIT xrunChanged();
 }
 
 QVariant QPipewireNode::property(const char *key)
 {
-    return m_properties[key];
+    return m_properties[QString::fromUtf8(key)];
 }
 
 void QPipewireNode::setProperty(const char *key, QVariant value)
@@ -373,7 +373,7 @@ void QPipewireNode::setVolume(float volume)
     this->setProperties(props);
 
     m_volume = volume;
-    emit volumeChanged(m_volume);
+    Q_EMIT volumeChanged(m_volume);
 }
 
 

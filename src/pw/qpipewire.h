@@ -56,7 +56,7 @@ class QPipewire : public QObject
     Q_PROPERTY(SystemdService* wirePlumberService READ wirePlumberService NOTIFY wirePlumberServiceChanged)
     Q_PROPERTY(AlsaProperties* alsaProperties READ alsaProperties NOTIFY alsaPropertiesChanged)
 
-signals:
+Q_SIGNALS:
     void quit();
     void registryObject(uint32_t id,
                         uint32_t permissions,
@@ -64,7 +64,7 @@ signals:
                         uint32_t version,
                         const struct spa_dict *props);
 
-    void appVersionChanged(); //bogus, never emitted
+    void appVersionChanged(); //bogus, never Q_EMITted
     void settingsChanged();
 //    void clientChanged();
     void nodesChanged();
@@ -110,13 +110,13 @@ public:
      */
     Q_INVOKABLE void round_trip();
 
-    QString appVersion() { return QString(PROJECT_VERSION); }
-    Q_INVOKABLE QString pipewireCompiledVersion() { return pw_get_headers_version(); }
-    Q_INVOKABLE QString pipewireLinkedVersion() { return pw_get_library_version(); }
+    QString appVersion() { return QStringLiteral(PROJECT_VERSION); }
+    Q_INVOKABLE QString pipewireCompiledVersion() { return QString::fromUtf8(pw_get_headers_version()); }
+    Q_INVOKABLE QString pipewireLinkedVersion() { return QString::fromUtf8(pw_get_library_version()); }
     Q_INVOKABLE QString platformName() { return QGuiApplication::platformName(); }
     Q_INVOKABLE QString qtCompiledVersion() { return QStringLiteral(QT_VERSION_STR); }
     Q_INVOKABLE QString qtLinkedVersion() { return QString::fromLocal8Bit(qVersion()); }
-    Q_INVOKABLE QString kframeworksCompiledVersion() { return QStringLiteral(KF5_COMPILED_VERSION); }
+    Q_INVOKABLE QString kframeworksCompiledVersion() { return QStringLiteral(KF6_COMPILED_VERSION); }
 
     Q_INVOKABLE static QString formatTime(double val);
     Q_INVOKABLE bool isPipewireMediaSession() {

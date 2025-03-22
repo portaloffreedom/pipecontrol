@@ -26,12 +26,14 @@ SystemdService::SystemdService(QString serviceName, bool userService)
     : serviceName(serviceName)
     , bus(userService ? QDBusConnection::sessionBus() : QDBusConnection::systemBus())
 {
-    if (!serviceName.endsWith(".service")) {
-        this->serviceName.append(".service");
+    if (!serviceName.endsWith(QStringLiteral(".service"))) {
+        this->serviceName.append(QStringLiteral(".service"));
     }
 
-    systemd = new QDBusInterface("org.freedesktop.systemd1", "/org/freedesktop/systemd1",
-                                 "org.freedesktop.systemd1.Manager", bus);
+    systemd = new QDBusInterface(QStringLiteral("org.freedesktop.systemd1"),
+                                 QStringLiteral("/org/freedesktop/systemd1"),
+                                 QStringLiteral("org.freedesktop.systemd1.Manager"),
+                                 bus);
 
     checkIsRunning();
 }
@@ -50,24 +52,24 @@ void SystemdService::setRunning(bool running)
         this->stop();
     }
     isRunning = running;
-    emit runningChanged(isRunning);
+    Q_EMIT runningChanged(isRunning);
 }
 
 void SystemdService::_setRunning(bool running)
 {
     if (isRunning == running) return;
     isRunning = running;
-    emit runningChanged(isRunning);
+    Q_EMIT runningChanged(isRunning);
 }
 
 bool SystemdService::checkIsRunning()
 {
     bool service_found = false;
-    QDBusMessage r = systemd->call("ListUnits");
+    QDBusMessage r = systemd->call(QStringLiteral("ListUnits"));
     if (systemd->lastError().isValid())
-        qWarning() << "Call failed: " << systemd->lastError().message();
+        qWarning() << QStringLiteral("Call failed: ") << systemd->lastError().message();
     else {
-        assert(r.signature() == "a(ssssssouso)");
+        assert(r.signature() == QStringLiteral("a(ssssssouso)"));
 
         QVariantList arguments = r.arguments();
         const QDBusArgument busArgument = qvariant_cast<QDBusArgument>(arguments.at(0));
@@ -122,7 +124,7 @@ bool SystemdService::checkIsRunning()
 //                      << "\tjobobject: " << jobobject.toStdString() << std::endl
 //                         ;
 
-            this->_setRunning(active == "active" && substate == "running");
+            this->_setRunning(active == QStringLiteral("active") && substate == QStringLiteral("running"));
 
             busArgument.endStructure();
             service_found = true;
@@ -162,7 +164,7 @@ void SystemdService::start()
         qWarning() << "WARNING! Service " << serviceName << " was already running.";
         return;
     }
-    systemd->call("StartUnit", serviceName, "fail");
+    systemd->call(QStringLiteral("StartUnit"), serviceName, QStringLiteral("fail"));
     //TODO check return of above call
 
     for(int c=0; this->isRunning; c++) {
@@ -185,7 +187,7 @@ void SystemdService::stop()
         qWarning() << "WARNING! Service " << serviceName << " was already stopped.";
         return;
     }
-    systemd->call("StopUnit", serviceName, "fail");
+    systemd->call(QStringLiteral("StopUnit"), serviceName, QStringLiteral("fail"));
     //TODO check return of above call
 
     for(int c=0; !this->isRunning; c++) {
@@ -204,7 +206,7 @@ void SystemdService::restart()
 {
     checkIsRunning();
     qWarning() << "RESTARTING SERVICE: " << serviceName;
-    systemd->call("RestartUnit", serviceName, "fail");
+    systemd->call(QStringLiteral("RestartUnit"), serviceName, QStringLiteral("fail"));
     //TODO check return of above call
 
     _setRunning(false);
@@ -234,7 +236,7 @@ static bool variantToString(const QVariant &arg, QString &out)
     } else if (argType == QVariant::ByteArray) {
         out += QLatin1Char('{');
         QByteArray list = arg.toByteArray();
-        for (int i = 0; i < list.count(); ++i) {
+        for (int i = 0; i < list.size(); ++i) {
             out += QString::number(list.at(i));
             out += QLatin1String(", ");
         }

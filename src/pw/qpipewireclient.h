@@ -36,7 +36,7 @@ public:
 	Q_PROPERTY(int id READ id NOTIFY idChanged)
     Q_PROPERTY(QList<QVariantMap> propertiesList READ propertiesList NOTIFY propertiesChanged)
 
-signals:
+Q_SIGNALS:
     void propertiesChanged();
     void idChanged();
     void propertyChanged(QString key, QString value);
@@ -83,8 +83,8 @@ public:
         QMap<QString, QString>::iterator i = m_properties.begin();
         while (i != m_properties.end()) {
             QVariantMap value;
-            value["name"] = i.key();
-            value["value"] = i.value();
+            value[QStringLiteral("name")] = i.key();
+            value[QStringLiteral("value")] = i.value();
             rval.append(value);
             ++i;
         }

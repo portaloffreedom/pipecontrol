@@ -68,7 +68,7 @@ Q_OBJECT
     Q_PROPERTY(float volume READ volume WRITE setVolume NOTIFY volumeChanged)
     Q_PROPERTY(QString state READ state NOTIFY stateChanged)
 
-signals:
+Q_SIGNALS:
     void idChanged();
     void nameChanged();
     void nodeNameChanged();
@@ -171,12 +171,12 @@ public:
     float volume() const { return m_volume; }
     QString state() const {
         switch (m_state) {
-            case PW_NODE_STATE_ERROR: return "ERROR";
-            case PW_NODE_STATE_CREATING: return "CREATING";
-            case PW_NODE_STATE_SUSPENDED: return "SUSPENDED";
-            case PW_NODE_STATE_IDLE: return "IDLE";
-            case PW_NODE_STATE_RUNNING: return "RUNNING";
-            default: return "UNKNOWN";
+            case PW_NODE_STATE_ERROR: return QStringLiteral("ERROR");
+            case PW_NODE_STATE_CREATING: return QStringLiteral("CREATING");
+            case PW_NODE_STATE_SUSPENDED: return QStringLiteral("SUSPENDED");
+            case PW_NODE_STATE_IDLE: return QStringLiteral("IDLE");
+            case PW_NODE_STATE_RUNNING: return QStringLiteral("RUNNING");
+            default: return QStringLiteral("UNKNOWN");
         }
     }
 

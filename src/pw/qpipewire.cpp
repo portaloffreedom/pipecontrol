@@ -91,7 +91,7 @@ static void do_quit(void *userdata, int /*signal_number*/)
 void QPipewire::_quit()
 {
     pw_main_loop_quit(loop);
-    emit quit();
+    Q_EMIT quit();
 }
 
 //-----------------------------------------------------------------------------
@@ -163,12 +163,12 @@ void QPipewire::_registry_event(uint32_t id,
 {
     // qDebug() << "object: id(" << id << ") type(" << type << '/' << version << ')';
 
-    emit registryObject(id, permissions, type, version, props);
+    Q_EMIT registryObject(id, permissions, type, version, props);
 
     if(strcmp(type, PW_TYPE_INTERFACE_Client) == 0)
     {
         QPipewireClient *pw_client = new QPipewireClient(this, id, props);
-//        emit clientChanged();
+//        Q_EMIT clientChanged();
 
         // Shot only once when data has arrived
         QMetaObject::Connection *const connection = new QMetaObject::Connection;
@@ -176,7 +176,7 @@ void QPipewire::_registry_event(uint32_t id,
             if (this->isPipewireMediaSession()) {
                 // creating alsa properties when media-session is not installed could crash the application
                 alsa_properties = new AlsaProperties(pw_client, this);
-                emit alsaPropertiesChanged();
+                Q_EMIT alsaPropertiesChanged();
             }
             // delete so the connection is not shot twice
             delete connection;
@@ -193,7 +193,7 @@ void QPipewire::_registry_event(uint32_t id,
                     streq(metadata_name, "settings"))
             {
                 pw_settings = new QPipewireSettings(this, id, props);
-                emit settingsChanged();
+                Q_EMIT settingsChanged();
             } else {
                 // qWarning() << "Ignoring metadata \"" << metadata_name << '"';
             }
@@ -206,34 +206,34 @@ void QPipewire::_registry_event(uint32_t id,
             return;
         }
         pw_profiler = new QPipewireProfiler(this, id, props);
-        emit profilerChanged();
+        Q_EMIT profilerChanged();
     }
     else if (streq(type, PW_TYPE_INTERFACE_Node))
     {
         QPipewireNode *node;
-        const QString str = spa_dict_lookup(props, PW_KEY_NODE_NAME);
-        if (str.startsWith("alsa_input.") || str.startsWith("alsa_output.")) {
+        const QString str = QString::fromUtf8(spa_dict_lookup(props, PW_KEY_NODE_NAME));
+        if (str.startsWith(QStringLiteral("alsa_input.")) || str.startsWith(QStringLiteral("alsa_output."))) {
             node = new QPipewireAlsaNode(this, id, props);
         } else {
             node = new QPipewireNode(this, id, props);
         }
         m_nodes->append(node);
         // qWarning() << "Adding node id(" << id << "): " << node->name();
-        emit nodesChanged();
+        Q_EMIT nodesChanged();
     }
     else if (streq(type, PW_TYPE_INTERFACE_Link))
     {
 	    QPipewireLink *link = new QPipewireLink(this, id, props);
 	    m_links.append(link);
 	    // qWarning() << "Adding link id(" << id << "): ";
-	    emit linksChanged();
+	    Q_EMIT linksChanged();
     }
     else if (streq(type, PW_TYPE_INTERFACE_Port))
     {
 	    QPipewirePort *port = new QPipewirePort(this, id, props);
 	    m_ports.append(port);
 	    // qWarning() << "Adding port id(" << id << "): ";
-	    emit portsChanged();
+	    Q_EMIT portsChanged();
     }
     else if (streq(type, PW_TYPE_INTERFACE_Device)) {
         QPipewireDevice *device = new QPipewireDevice(this, id, props);
@@ -251,7 +251,7 @@ void QPipewire::_registry_event_remove(uint32_t id)
             // ALL interfaces that are not NODES are ignored here.
             // qWarning() << "Removing id(" << id << ":" << node->id() << "): " << node->name();
             m_nodes->removeAt(i);
-            emit nodesChanged();
+            Q_EMIT nodesChanged();
             node->deleteLater();
             return;
         }
@@ -262,7 +262,7 @@ void QPipewire::_registry_event_remove(uint32_t id)
         if (candidate && candidate->id_u32() == id) {
             QPipewireLink *link = candidate;
             m_links.removeAt(i);
-            emit linksChanged();
+            Q_EMIT linksChanged();
             link->deleteLater();
             return;
         }
@@ -327,12 +327,12 @@ QPipewire::QPipewire(int *argc, char **argv[], QObject *parent)
                              &registry_events,
                              this);
 
-    pipewire_media_session = new SystemdService("pipewire-media-session", true);
-    wireplumber_service = new SystemdService("wireplumber", true);
+    pipewire_media_session = new SystemdService(QStringLiteral("pipewire-media-session"), true);
+    wireplumber_service = new SystemdService(QStringLiteral("wireplumber"), true);
 
     // QT stuff
     connect(m_nodes, &QPipewireNodeListModel::layoutChanged, this, [this]() {
-        emit nodesChanged();
+        Q_EMIT nodesChanged();
     });
 }
 
@@ -352,8 +352,7 @@ QPipewire::~QPipewire()
     if (pw_profiler != nullptr) {
         delete pw_profiler;
     }
-    QPipewireNode *node;
-    foreach(node, m_nodes->list()) {
+    for(const QPipewireNode *node: m_nodes->list()) {
         delete node;
     }
     delete m_nodes;

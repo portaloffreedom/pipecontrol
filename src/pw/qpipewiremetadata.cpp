@@ -38,11 +38,11 @@ int QPipewireMetadata::_metadata_property(uint32_t id,
                                           const char* value)
 {
     if (key == nullptr) {
-        emit onAllKeysRemoved(id);
+        Q_EMIT onAllKeysRemoved(id);
     } else if (value == nullptr) {
-        emit onKeyRemoved(id, key);
+        Q_EMIT onKeyRemoved(id, key);
     } else {
-        emit onKeyUpdated(id, key, type, value);
+        Q_EMIT onKeyUpdated(id, key, type, value);
     }
 
     return 0;

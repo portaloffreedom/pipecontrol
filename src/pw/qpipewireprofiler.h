@@ -29,7 +29,7 @@ class QPipewire;
 class QPipewireProfiler : public QObject
 {
     Q_OBJECT
-signals:
+Q_SIGNALS:
 
 private:
     QPipewire *pipewire = nullptr;

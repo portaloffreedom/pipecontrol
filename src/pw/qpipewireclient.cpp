@@ -35,14 +35,14 @@ void QPipewireClient::_client_info(const struct pw_client_info *info)
 {
     const struct spa_dict_item *item;
     spa_dict_for_each(item, info->props) {
-        const QString key = item->key;
-        const QString value = item->value;
+        const QString key = QString::fromUtf8(item->key);
+        const QString value = QString::fromUtf8(item->value);
         m_properties[key] = value;
 		// std::clog << "client_" << this->m_id << ":[" << key.toStdString() << "]=" << value.toStdString() << std::endl;
-        emit propertyChanged(key, value);
+        Q_EMIT propertyChanged(key, value);
     }
 
-    emit propertiesChanged();
+    Q_EMIT propertiesChanged();
 }
 
 static const pw_client_events client_events {

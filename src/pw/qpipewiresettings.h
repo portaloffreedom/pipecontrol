@@ -22,6 +22,7 @@ class QPipewireMetadata;
 class QPipewire;
 
 #include "src/pw/qpipewiremetadata.h"
+#include <QtCore/qtmetamacros.h>
 
 class QPipewireSettings : public QPipewireMetadata
 {
@@ -32,7 +33,7 @@ class QPipewireSettings : public QPipewireMetadata
     Q_PROPERTY(int force_sampleRate READ force_sampleRate WRITE setForce_sampleRate NOTIFY force_sampleRateChanged)
     Q_PROPERTY(int force_buffer READ force_buffer WRITE setForce_buffer NOTIFY force_bufferChanged)
 
-signals:
+Q_SIGNALS:
     void logLevelChanged(int);
     void force_sampleRateChanged(int);
     void force_bufferChanged(int);

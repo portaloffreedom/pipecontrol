@@ -37,21 +37,21 @@ int main(int argc, char *argv[])
 
   QGuiApplication app(argc, argv);
   KLocalizedString::setApplicationDomain("pipecontrol");
-  QCoreApplication::setOrganizationName("Dek");
-  QCoreApplication::setOrganizationDomain("matteodroids.science");
-  QCoreApplication::setApplicationName("PipeControl");
+  QCoreApplication::setOrganizationName(QStringLiteral("Dek"));
+  QCoreApplication::setOrganizationDomain(QStringLiteral("matteodroids.science"));
+  QCoreApplication::setApplicationName(QStringLiteral("PipeControl"));
 
-  QGuiApplication::setApplicationVersion(PIPECONTROL_VERSION);
+  QGuiApplication::setApplicationVersion(QStringLiteral(PIPECONTROL_VERSION));
   QGuiApplication::setQuitOnLastWindowClosed(true);
   QGuiApplication::setWindowIcon(QIcon(QStringLiteral(INSTALL_PREFIX"/share/icons/hicolor/scalable/apps/pipecontrol.svg")));
   // This is necessary for the Application Icon on wayland (xdg-shell standard)
-  QGuiApplication::setDesktopFileName("PipeControl.desktop");
+  QGuiApplication::setDesktopFileName(QStringLiteral("PipeControl"));
 
   QTranslator translator;
   const QStringList uiLanguages = QLocale::system().uiLanguages();
   for (const QString &locale : uiLanguages) {
-      const QString baseName = "pipecontrol_" + QLocale(locale).name();
-      if (translator.load(":/i18n/" + baseName)) {
+      const QString baseName = QStringLiteral("pipecontrol_") + QLocale(locale).name();
+      if (translator.load(QStringLiteral(":/i18n/") + baseName)) {
           QGuiApplication::installTranslator(&translator);
           break;
         }
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   qmlRegisterSingletonType<QPipewire>("Pipewire", 1, 0, "Pipewire", [](QQmlEngine*, QJSEngine*) {return static_cast<QObject*>(s_qpipewire);});
 #endif
 
-  qmlRegisterUncreatableType<QPipewireNode>("Pipewire.Node", 1, 0, "Node", "Not creatable from QML");
+  qmlRegisterUncreatableType<QPipewireNode>("Pipewire.Node", 1, 0, "Node", QStringLiteral("Not creatable from QML"));
 
 
   QQmlApplicationEngine engine;

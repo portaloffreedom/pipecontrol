@@ -22,7 +22,7 @@ class SystemdService : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
-signals:
+Q_SIGNALS:
     void runningChanged(bool);
 
 private:

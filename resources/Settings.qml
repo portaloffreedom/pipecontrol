@@ -1,7 +1,7 @@
-import QtQuick 2.12
+import QtQuick 2.15
 import QtQuick.Layouts 1.11
-import QtQuick.Controls 2.12
-import org.kde.kirigami 2.12 as Kirigami
+import QtQuick.Controls 2.15
+import org.kde.kirigami 2.15 as Kirigami
 import Pipewire 1.0
 
 Kirigami.ScrollablePage {
@@ -11,23 +11,23 @@ Kirigami.ScrollablePage {
     property bool show_advanced: false
 
 
-    actions {
-        main: Kirigami.Action {
-            text: i18n("Top")
-            icon.name: "source-playlist"
-            onTriggered: root.pageStack.replace("qrc:/resources/Top.qml", {
-                root: root
-            })
-        }
-        left: Kirigami.Action {
+    actions: [
+        Kirigami.Action {
             id: advanced_settings
             text: i18nc("@settings","advanced")
             icon.name: "adjustrow"
             checkable: true
             checked: settingsPage.show_advanced
             onCheckedChanged: settingsPage.show_advanced = advanced_settings.checked
+        },
+        Kirigami.Action {
+            text: i18n("Top")
+            icon.name: "source-playlist"
+            onTriggered: root.pageStack.replace("qrc:/resources/Top.qml", {
+                root: root
+            })
         }
-    }
+    ]
 
     Item {
         width: layout.implicitWidth

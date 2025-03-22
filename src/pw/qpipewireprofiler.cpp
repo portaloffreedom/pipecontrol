@@ -122,13 +122,10 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
     if (res < 0)
         return res;
 
-    {
-        QPipewireNode *i;
-        foreach(i, pipewire->m_nodes->list()) {
-            if (i && i->id() == id) {
-                node = i;
-                break;
-            }
+    for(QPipewireNode *i: pipewire->m_nodes->list()) {
+        if (i && i->id() == id) {
+            node = i;
+            break;
         }
     }
 
@@ -142,7 +139,7 @@ int QPipewireProfiler::process_driver_block(const struct spa_pod *pod, struct po
 
     if (measure.status != 3) {
         node->errors++;
-        emit node->errorChanged();
+        Q_EMIT node->errorChanged();
         if (node->last_error_status == -1)
             node->last_error_status = measure.status;
     }
@@ -170,13 +167,10 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
     if (res < 0)
         return res;
 
-    {
-        QPipewireNode *i;
-        foreach(i, pipewire->m_nodes->list()) {
-            if (i && i->id() == id) {
-                node = i;
-                break;
-            }
+    for (QPipewireNode *i: pipewire->m_nodes->list()) {
+        if (i && i->id() == id) {
+            node = i;
+            break;
         }
     }
 
@@ -187,7 +181,7 @@ int QPipewireProfiler::process_follower_block(const struct spa_pod *pod, struct 
     node->setDriver(point->driver);
     if (measure.status != 3) {
         node->errors++;
-        emit node->errorChanged();
+        Q_EMIT node->errorChanged();
         if (node->last_error_status == -1)
             node->last_error_status = measure.status;
     }

@@ -35,7 +35,7 @@ class QPipewireLink : public QObject
     Q_PROPERTY(int outputNode READ outputNode NOTIFY outputNodeChanged)
 
 
-signals:
+Q_SIGNALS:
     void idChanged();
     void inputPortChanged();
     void outputPortChanged();

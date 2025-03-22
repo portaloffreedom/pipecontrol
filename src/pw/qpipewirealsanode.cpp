@@ -21,5 +21,5 @@
 QPipewireAlsaNode::QPipewireAlsaNode(QPipewire *parent, uint32_t id, const struct spa_dict *props)
         : QPipewireNode(parent, id, props)
 {
-    m_name = spa_dict_lookup(props, PW_KEY_NODE_NICK);
+    m_name = QString::fromUtf8(spa_dict_lookup(props, PW_KEY_NODE_NICK));
 }

@@ -26,7 +26,7 @@ class QPipewire;
 class QPipewireMetadata : public QObject
 {
     Q_OBJECT
-signals:
+Q_SIGNALS:
     void onAllKeysRemoved(uint32_t id);
     void onKeyRemoved(uint32_t id, const char* key);
     void onKeyUpdated(uint32_t id, const char* key, const char* type, const char* value);

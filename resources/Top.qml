@@ -1,27 +1,108 @@
-import QtQuick 2.12
+import QtQuick 2.15
 import QtQuick.Layouts 1.11
 import Pipewire 1.0
 import Pipewire.Node 1.0
-import QtQuick.Controls 2.12 as Controls
-import org.kde.kirigami 2.12 as Kirigami
+import QtQuick.Controls 2.15 as Controls
+import org.kde.kirigami 2.15 as Kirigami
 
 Kirigami.ScrollablePage {
     title: i18nc("@title","Top")
     property var root
     Layout.fillWidth: true
 
-    actions.main: Kirigami.Action {
-        id: addAction
-        icon.name: "settings-configure"
-        text: i18n("Settings")
-        onTriggered: root.pageStack.replace("qrc:/resources/Settings.qml", {
-            root: root
-        })
-    }
+    actions: [
+        Kirigami.Action {
+            id: addAction
+            icon.name: "settings-configure"
+            text: i18n("Settings")
+            onTriggered: root.pageStack.replace("qrc:/resources/Settings.qml", {
+                root: root
+            })
+        }
+    ]
 
-    Component {
-        id: delegateComponent
-        Kirigami.SwipeListItem {
+    ListView {
+        id: mainList
+        Layout.fillWidth: trueq
+        Layout.fillHeight: true
+        currentIndex: -1
+
+        header:  RowLayout {
+            id: header
+            height: 30
+            Layout.fillWidth: true
+
+            Kirigami.Icon {}
+
+            Controls.Label {
+                Layout.leftMargin: 20
+                Layout.preferredWidth: 40
+                Layout.alignment: Qt.AlignRight
+                text: "ID"
+            }
+            Rectangle {
+                Layout.preferredWidth: 50
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "RATE"
+                }
+            }
+            Rectangle {
+                Layout.preferredWidth: 70
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "QUANT"
+                }
+            }
+            Rectangle {
+                Layout.preferredWidth: 70
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "WAIT"
+                }
+            }
+            Rectangle {
+                Layout.preferredWidth: 70
+                Controls.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    text: "BUSY"
+                }
+            }
+
+            Controls.Label {
+                Layout.leftMargin: 15
+                Layout.fillWidth: true
+                text: "NAME"
+            }
+        }
+
+        model: Pipewire.nodes
+        Component.onCompleted: Pipewire.nodes.sortList()
+        property var old_model: ListModel {
+            id: listModel
+
+            Component.onCompleted: {
+                for (var i = 0; i < 200; ++i) {
+                    listModel.append({"title": "Item " + i,
+                        "actions": [{text: "Action 1", icon: "document-decrypt"},
+                                    {text: "Action 2", icon: "mail-reply-sender"}],
+                        //"sec": Math.floor(i/10)
+                    })
+                }
+            }
+        }
+        moveDisplaced: Transition {
+            YAnimator {
+                duration: Kirigami.Units.longDuration
+                easing.type: Easing.InOutQuad
+            }
+        }
+        reuseItems: true
+        delegate: Kirigami.SwipeListItem {
             id: listItem
             contentItem: RowLayout {
                 id: noderowcomponent
@@ -57,61 +138,61 @@ Kirigami.ScrollablePage {
 
                     function mediaIconSource(node) {
                         switch(node.mediaType) {
-                        case Node.MediaTypeAudio:
-                            switch(node.nodeType) {
-                                case Node.NodeTypeInput:
-                                case Node.NodeTypeSource:
-                                    return "audio-input-microphone-symbolic";
-                                case Node.NodeTypeOutput:
-                                case Node.NodeTypeSink:
-                                    return "audio-speakers-symbolic";
-                                default:
-                                    return "error";
-                            }
-                        case Node.MediaTypeVideo:
-                            return "camera-video-symbolic";
-                        case Node.MediaTypeMidi:
-                            return "music-note-16th";
-                        default:
-                        case Node.MediaTypeNone:
-                            return "error";
+                            case Node.MediaTypeAudio:
+                                switch(node.nodeType) {
+                                    case Node.NodeTypeInput:
+                                    case Node.NodeTypeSource:
+                                        return "audio-input-microphone-symbolic";
+                                    case Node.NodeTypeOutput:
+                                    case Node.NodeTypeSink:
+                                        return "audio-speakers-symbolic";
+                                    default:
+                                        return "error";
+                                }
+                            case Node.MediaTypeVideo:
+                                return "camera-video-symbolic";
+                            case Node.MediaTypeMidi:
+                                return "music-note-16th";
+                            default:
+                            case Node.MediaTypeNone:
+                                return "error";
                         }
                     }
 
                     function textSource(node) {
                         switch(node.mediaType) {
-                        case Node.MediaTypeAudio:
-                            switch(node.nodeType) {
-                                case Node.NodeTypeInput:
-                                    return i18nc("node_type", "Audio Input");
-                                case Node.NodeTypeSource:
-                                    return i18nc("node_type", "Audio Source");
-                                case Node.NodeTypeOutput:
-                                    return i18nc("node_type", "Audio Output");
-                                case Node.NodeTypeSink:
-                                    return i18nc("node_type", "Audio Sink");
-                                default:
-                                    return i18nc("node_type", "Error");
-                            }
-                        case Node.MediaTypeVideo:
-                            switch(node.nodeType) {
-                                case Node.NodeTypeInput:
-                                    return i18nc("node_type", "Video Input");
-                                case Node.NodeTypeSource:
-                                    return i18nc("node_type", "Video Source");
-                                case Node.NodeTypeOutput:
-                                    return i18nc("node_type", "Video Output");
-                                case Node.NodeTypeSink:
-                                    return i18nc("node_type", "Video Sink");
-                                default:
-                                    return i18nc("node_type", "Error");
-                            }
-                        case Node.MediaTypeMidi:
-                            return i18nc("node_type", "Midi");
-                        case Node.MediaTypeNone:
-                            return i18nc("node_type", "None");
-                        default:
-                            return i18nc("node_type", "Error");
+                            case Node.MediaTypeAudio:
+                                switch(node.nodeType) {
+                                    case Node.NodeTypeInput:
+                                        return i18nc("node_type", "Audio Input");
+                                    case Node.NodeTypeSource:
+                                        return i18nc("node_type", "Audio Source");
+                                    case Node.NodeTypeOutput:
+                                        return i18nc("node_type", "Audio Output");
+                                    case Node.NodeTypeSink:
+                                        return i18nc("node_type", "Audio Sink");
+                                    default:
+                                        return i18nc("node_type", "Error");
+                                }
+                            case Node.MediaTypeVideo:
+                                switch(node.nodeType) {
+                                    case Node.NodeTypeInput:
+                                        return i18nc("node_type", "Video Input");
+                                    case Node.NodeTypeSource:
+                                        return i18nc("node_type", "Video Source");
+                                    case Node.NodeTypeOutput:
+                                        return i18nc("node_type", "Video Output");
+                                    case Node.NodeTypeSink:
+                                        return i18nc("node_type", "Video Sink");
+                                    default:
+                                        return i18nc("node_type", "Error");
+                                }
+                            case Node.MediaTypeMidi:
+                                return i18nc("node_type", "Midi");
+                            case Node.MediaTypeNone:
+                                return i18nc("node_type", "None");
+                            default:
+                                return i18nc("node_type", "Error");
                         }
                     }
                 }
@@ -224,100 +305,13 @@ Kirigami.ScrollablePage {
             actions: [
                 Kirigami.Action {
                     visible: model.node.isAlsa()
-                    iconName: "documentinfo"
+                    icon.name: "documentinfo"
                     text: i18nc("@audiostream","info")
                     onTriggered: {
                         infoAlsaNodeSheet.open()
                     }
                 }
             ]
-        }
-    }
-
-    ListView {
-        id: mainList
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        currentIndex: -1
-
-        header:  RowLayout {
-            id: header
-            height: 30
-            Layout.fillWidth: true
-
-            Kirigami.Icon {}
-
-            Controls.Label {
-                Layout.leftMargin: 20
-                Layout.preferredWidth: 40
-                Layout.alignment: Qt.AlignRight
-                text: "ID"
-            }
-            Rectangle {
-                Layout.preferredWidth: 50
-                Controls.Label {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    text: "RATE"
-                }
-            }
-            Rectangle {
-                Layout.preferredWidth: 70
-                Controls.Label {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    text: "QUANT"
-                }
-            }
-            Rectangle {
-                Layout.preferredWidth: 70
-                Controls.Label {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    text: "WAIT"
-                }
-            }
-            Rectangle {
-                Layout.preferredWidth: 70
-                Controls.Label {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    text: "BUSY"
-                }
-            }
-
-            Controls.Label {
-                Layout.leftMargin: 15
-                Layout.fillWidth: true
-                text: "NAME"
-            }
-        }
-
-        model: Pipewire.nodes
-        Component.onCompleted: Pipewire.nodes.sortList()
-        property var old_model: ListModel {
-            id: listModel
-
-            Component.onCompleted: {
-                for (var i = 0; i < 200; ++i) {
-                    listModel.append({"title": "Item " + i,
-                        "actions": [{text: "Action 1", icon: "document-decrypt"},
-                                    {text: "Action 2", icon: "mail-reply-sender"}],
-                        //"sec": Math.floor(i/10)
-                    })
-                }
-            }
-        }
-        moveDisplaced: Transition {
-            YAnimator {
-                duration: Kirigami.Units.longDuration
-                easing.type: Easing.InOutQuad
-            }
-        }
-        delegate: Kirigami.DelegateRecycler {
-            id: delegate
-            width: parent ? parent.width : implicitWidth
-            sourceComponent: delegateComponent
         }
         //section {
             //property: "sec"

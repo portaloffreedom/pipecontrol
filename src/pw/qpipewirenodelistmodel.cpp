@@ -26,7 +26,7 @@ QPipewireNodeListModel::~QPipewireNodeListModel()
 
 void QPipewireNodeListModel::sortList()
 {
-   emit layoutAboutToBeChanged();
+   Q_EMIT layoutAboutToBeChanged();
    QList<QPipewireNode*> old = m_nodes;
 //   std::sort(old.begin(), old.end(), [](QPipewireNode*a, QPipewireNode*b) {
 //       return a->nodeName() > b->nodeName();
@@ -43,7 +43,7 @@ void QPipewireNodeListModel::sortList()
        }
    }
 
-   emit layoutChanged();
+   Q_EMIT layoutChanged();
 }
 
 #include <iostream>
@@ -113,19 +113,19 @@ QVariant QPipewireNodeListModel::data(const QModelIndex &index, int _role) const
         }
     }
     case IDRole:
-        return node ? node->id() : QVariant("nullptr");
+        return node ? node->id() : QVariant(QStringLiteral("nullptr"));
     case ActiveRole:
         return node ? node->active() : false;
     case RateRole:
-        return node ? node->rate() : QVariant("nullptr");
+        return node ? node->rate() : QVariant(QStringLiteral("nullptr"));
     case QuantumRole:
-        return node ? node->quantum() : QVariant("nullptr");
+        return node ? node->quantum() : QVariant(QStringLiteral("nullptr"));
     case WaitRole:
         return node ? node->waiting() : 0.0;
     case BusyRole:
         return node ? node->busy() : 0.0;
     case NameRole:
-        return node ? node->name() : "[deleted]";
+        return node ? node->name() : QVariant(QStringLiteral("[deleted]"));
     case DriverIDRole:
         if (node && node->driver()) {
             return node->driver()->id();
@@ -142,26 +142,26 @@ QVariant QPipewireNodeListModel::headerData(int section, Qt::Orientation orienta
 {
     switch (role) {
     case IndexRole:
-        return "Index";
+        return QStringLiteral("Index");
     case NodeRole:
     case Qt::DisplayRole:
-        return "Node";
+        return QStringLiteral("Node");
     case IDRole:
-        return QVariant("ID");
+        return QStringLiteral("ID");
     case ActiveRole:
-        return QVariant("Active");
+        return QStringLiteral("Active");
     case RateRole:
-        return QVariant("Rate");
+        return QStringLiteral("Rate");
     case QuantumRole:
-        return QVariant("Quantum");
+        return QStringLiteral("Quantum");
     case WaitRole:
-        return QVariant("Wait");
+        return QStringLiteral("Wait");
     case BusyRole:
-        return QVariant("Busy");
+        return QStringLiteral("Busy");
     case NameRole:
-        return QVariant("Name");
+        return QStringLiteral("Name");
     case DriverIDRole:
-        return QVariant("Driver");
+        return QStringLiteral("Driver");
     default:
         qWarning() << "UNDEFINED ROLE" << role;
         throw std::runtime_error("Undefined role");
@@ -215,7 +215,7 @@ void QPipewireNodeListModel::rowChanged(QPipewireNode* node, int role)
     int index = m_nodes.indexOf(node);
     QModelIndex topLeft = createIndex(index, 0);
     QModelIndex bottomRight = createIndex(index, 0);
-    emit dataChanged(topLeft, bottomRight, {role});
+    Q_EMIT dataChanged(topLeft, bottomRight, {role});
 }
 
 void QPipewireNodeListModel::move(int from, int to)

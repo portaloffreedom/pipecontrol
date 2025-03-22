@@ -36,8 +36,8 @@ bool is_valid_file(const QString &path)
 AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
     : QObject(parent)
 {
-    std::string config_prefix = client->has_property("config.prefix") ?
-                                    client->property("config.prefix").toStdString() : "media-session.d";
+    std::string config_prefix = client->has_property(QStringLiteral("config.prefix")) ?
+                                    client->property(QStringLiteral("config.prefix")).toStdString() : "media-session.d";
     const char *home_folder = std::getenv("HOME");
     if (home_folder == nullptr) {
         home_folder = "";
@@ -53,8 +53,8 @@ AlsaProperties::AlsaProperties(QPipewireClient *client, QObject *parent)
                        << config_prefix
                        << "/alsa-monitor.conf";
 
-    this->globalConf = global_conf_filename.str().c_str();
-    this->userConf = user_conf_filename.str().c_str();
+    this->globalConf = QString::fromUtf8(global_conf_filename.str().c_str());
+    this->userConf = QString::fromUtf8(user_conf_filename.str().c_str());
 
     bool has_global = is_valid_file(globalConf);
     bool has_user = is_valid_file(userConf);
@@ -73,7 +73,7 @@ void AlsaProperties::setBatchDisabled(bool disabled)
     if (_batchDisabled == disabled) return;
     _batchDisabled = disabled;
     writeUserConf();
-    emit batchDisabledChanged(_batchDisabled);
+    Q_EMIT batchDisabledChanged(_batchDisabled);
 }
 
 void AlsaProperties::setPeriodSize(int newPeriod)
@@ -81,7 +81,7 @@ void AlsaProperties::setPeriodSize(int newPeriod)
     if (_periodSize == newPeriod) return;
     _periodSize = newPeriod;
     writeUserConf();
-    emit periodSizeChanged(_periodSize);
+    Q_EMIT periodSizeChanged(_periodSize);
 }
 
 void AlsaProperties::readGlobalConf()
@@ -105,12 +105,12 @@ int _parse<int>(const QString &value) {
 template<>
 bool _parse<bool>(const QString &value) {
     const QString lower_case_value = value.toLower();
-    if (lower_case_value == "true") {
+    if (lower_case_value == QStringLiteral("true")) {
         return true;
-    } else if (lower_case_value == "false") {
+    } else if (lower_case_value == QStringLiteral("false")) {
         return false;
     } else {
-        throw std::runtime_error((QString("Could not parse bool type from: ") + value).toStdString());
+        throw std::runtime_error(QString((QStringLiteral("Could not parse bool type from: ") + value)).toStdString());
     }
 }
 
@@ -125,19 +125,19 @@ QString _tostring<int>(const int value) {
 template<>
 QString _tostring<bool>(const bool value) {
     if (value) {
-        return "true";
+        return QStringLiteral("true");
     } else {
-        return "false";
+        return QStringLiteral("false");
     }
 }
 
 template<typename T>
 bool parse_line(const QString &line, const QString &target, T &value)
 {
-    QRegularExpression re(QString("(#*)\\s*") + target + "\\s*=\\s*([\\d|\\w]+)");
+    QRegularExpression re(QStringLiteral("(#*)\\s*") + target + QStringLiteral("\\s*=\\s*([\\d|\\w]+)"));
     QRegularExpressionMatch match = re.match(line);
     if(!match.hasMatch()) {
-        throw std::runtime_error((QString("Could not find ") + target).toStdString());
+        throw std::runtime_error(QString((QStringLiteral("Could not find ") + target)).toStdString());
     }
 
     if (!match.captured(1).isEmpty()) {
@@ -151,10 +151,10 @@ bool parse_line(const QString &line, const QString &target, T &value)
 template<typename T>
 void parse_and_change_line(QString &line, const QString &target, T value)
 {
-    QRegularExpression re(QString("(#*)\\s*") + target + "\\s*=\\s*([\\d|\\w]+)");
+    QRegularExpression re(QStringLiteral("(#*)\\s*") + target + QStringLiteral("\\s*=\\s*([\\d|\\w]+)"));
     QRegularExpressionMatch match = re.match(line);
     if(!match.hasMatch()) {
-        throw std::runtime_error((QString("Could not find ") + target).toStdString());
+        throw std::runtime_error(QString((QStringLiteral("Could not find ") + target)).toStdString());
     }
 
     if (!match.captured(1).isEmpty()) {
@@ -178,17 +178,17 @@ void AlsaProperties::readConf(const QString& filename)
     }
 
     while (!conf.atEnd()) {
-        QString line = conf.readLine().trimmed();
+        QString line = QString::fromUtf8(conf.readLine().trimmed());
 
         // Skip comments
-        if (line.startsWith('#')) continue;
+        if (line.startsWith(QStringLiteral("#"))) continue;
 
-        if (line.contains("api.alsa.disable-batch")) {
-            bool found = parse_line(line, "api.alsa.disable-batch", _batchDisabled);
-            if (found) emit batchDisabledChanged(_batchDisabled);
-        } else if (line.contains("api.alsa.period-size")) {
-            bool found = parse_line(line, "api.alsa.period-size", _periodSize);
-            if (found) emit periodSizeChanged(_periodSize);
+        if (line.contains(QStringLiteral("api.alsa.disable-batch"))) {
+            bool found = parse_line(line, QStringLiteral("api.alsa.disable-batch"), _batchDisabled);
+            if (found) Q_EMIT batchDisabledChanged(_batchDisabled);
+        } else if (line.contains(QStringLiteral("api.alsa.period-size"))) {
+            bool found = parse_line(line, QStringLiteral("api.alsa.period-size"), _periodSize);
+            if (found) Q_EMIT periodSizeChanged(_periodSize);
         }
     }
 }
@@ -199,7 +199,7 @@ void AlsaProperties::writeUserConf() const
     QDir folder = QDir(confInfo.absolutePath());
     std::cout << "Creating user conf folder: " << folder.absolutePath().toStdString() << std::endl;
     // This will return true even if the folder already exists.
-    if (!folder.mkpath(".")) {
+    if (!folder.mkpath(QStringLiteral("."))) {
         throw std::runtime_error("Could not create user conf folder");
     }
 
@@ -218,12 +218,12 @@ void AlsaProperties::writeUserConf() const
         }
 
         while (!inputFile->atEnd()) {
-            QString line = inputFile->readLine();
+            QString line = QString::fromUtf8(inputFile->readLine());
             QString trimmed = line.trimmed();
-            if (trimmed.contains("api.alsa.disable-batch")) {
-                parse_and_change_line(line, "api.alsa.disable-batch", this->_batchDisabled);
-            } else if (trimmed.contains("api.alsa.period-size")) {
-                parse_and_change_line(line, "api.alsa.period-size", this->_periodSize);
+            if (trimmed.contains(QStringLiteral("api.alsa.disable-batch"))) {
+                parse_and_change_line(line, QStringLiteral("api.alsa.disable-batch"), this->_batchDisabled);
+            } else if (trimmed.contains(QStringLiteral("api.alsa.period-size"))) {
+                parse_and_change_line(line, QStringLiteral("api.alsa.period-size"), this->_periodSize);
             }
 
             lines.append(line);
