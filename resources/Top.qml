@@ -271,10 +271,16 @@ Kirigami.ScrollablePage {
 
                 Kirigami.OverlaySheet {
                     id: infoAlsaNodeSheet
+                    anchors.centerIn: Controls.Overlay.overlay
+                    width: infoAlsaNodeSheet_form.implicitWidth + 40
+                    height: infoAlsaNodeSheet_form.implicitHeight + 40
                     header: Kirigami.Heading {
                         text: model.name
                     }
                     Kirigami.FormLayout {
+                        id: infoAlsaNodeSheet_form
+                        implicitWidth: Math.max(nameField.implicitWidth, descriptionField.implicitWidth, classField.implicitWidth, runningField.implicitWidth)
+                        implicitHeight: Math.max(200, nameField.implicitHeight + descriptionField.implicitHeight + classField.implicitHeight + runningField.implicitHeight + (40*5))
                         Controls.Label {
                             id: nameField
                             Kirigami.FormData.label: i18nc("@label:textbox", "Node Description:")
