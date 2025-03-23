@@ -43,13 +43,16 @@ Kirigami.ApplicationWindow {
 
     Kirigami.OverlaySheet {
         id: aboutSheet
+        width: aboutlabel.leftPadding + aboutlabel.contentWidth + aboutlabel.rightPadding + 40 // 40 extra necessary, unknown reason
         parent: applicationWindow().overlay
         header: Kirigami.Heading {
             text: "About PipeControl"
         }
-        Controls.Label {
-            text: "Pipecontrol v" + Pipewire.appVersion +
-                    "\nWork in progress by @portaloffreedom." +
+        RowLayout {
+            Controls.Label {
+                id: aboutlabel
+                text: "Pipecontrol v" + Pipewire.appVersion +
+                    "\nWork in progress by @portaloffreedom" +
                     "\nLicense: GPLv3" +
                     "\n" +
                     "\n Pipewire compiled version: " + Pipewire.pipewireCompiledVersion() +
@@ -58,6 +61,7 @@ Kirigami.ApplicationWindow {
                     "\n Qt linked version: " + Pipewire.qtLinkedVersion() +
                     "\n KF5 compiled version: " + Pipewire.kframeworksCompiledVersion() +
                     "\n Platform: " + Pipewire.platformName()
+            }
         }
     }
 
