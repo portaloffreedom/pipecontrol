@@ -22,42 +22,43 @@
 
 #define QPIPEWIRE_CAST(x) QPipewireProfiler* _this = static_cast<QPipewireProfiler*>(x);
 
-void profiler_profile(void *data, const struct spa_pod *pod)
+void profiler_profile(void *data, const spa_pod *pod)
 {
     QPIPEWIRE_CAST(data);
     _this->_profiler_profile(pod);
 }
 
-void QPipewireProfiler::_profiler_profile(const struct spa_pod *pod)
+void QPipewireProfiler::_profiler_profile(const spa_pod *pod)
 {
-    struct spa_pod *o;
-    struct spa_pod_prop *p;
-    point point;
+    const spa_pod *obj = nullptr;
 
-    uint32_t pod_size = SPA_POD_BODY_SIZE(pod);
-    for (o = static_cast<spa_pod *>(SPA_POD_BODY(pod));
-         spa_pod_is_inside(pod, pod_size, o);
-         o = (struct spa_pod *)spa_pod_next(o))
+    // SPA_POD_STRUCT_FOREACH(pod, obj)
+    uint32_t pod_body_size = SPA_POD_BODY_SIZE(pod);
+    for (obj = static_cast<const spa_pod *>(SPA_POD_BODY(pod));
+         spa_pod_is_inside(SPA_POD_BODY(pod), pod_body_size, obj);
+         obj = static_cast<const spa_pod *>(spa_pod_next(obj)))
     {
         int res = 0;
-        if (!spa_pod_is_object_type(o, SPA_TYPE_OBJECT_Profiler))
+        if (!spa_pod_is_object_type(obj, SPA_TYPE_OBJECT_Profiler))
             continue;
 
+        const spa_pod_prop *property = nullptr;
+        point point;
         spa_zero(point);
-        SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)o, p)
+        SPA_POD_OBJECT_FOREACH((struct spa_pod_object*)obj, property)
         {
-            switch(p->key) {
+            switch(property->key) {
             case SPA_PROFILER_info:
-                    res = process_info(&p->value, &point.info);
+                    res = process_info(&property->value, &point.info);
                     break;
             case SPA_PROFILER_clock:
-                    res = process_clock(&p->value, &point.info);
+                    res = process_clock(&property->value, &point.info);
                     break;
             case SPA_PROFILER_driverBlock:
-                    res = process_driver_block(&p->value, &point);
+                    res = process_driver_block(&property->value, &point);
                     break;
             case SPA_PROFILER_followerBlock:
-                    process_follower_block(&p->value, &point);
+                    process_follower_block(&property->value, &point);
                     break;
             default:
                     break;
